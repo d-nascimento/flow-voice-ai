@@ -49,7 +49,7 @@ class WhisperTranscriber:
                 "response_format": "json",
                 "temperature": 0.0,
             }
-            if self.default_language:
+            if self.default_language and self.default_language.lower() not in ("auto", "none", ""):
                 kwargs["language"] = self.default_language
 
             response = self.client.audio.transcriptions.create(**kwargs)

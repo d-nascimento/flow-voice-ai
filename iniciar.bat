@@ -4,5 +4,5 @@ cd /d "%~dp0"
 echo ===================================================
 echo   Iniciando Flow Voice AI...
 echo ===================================================
-".venv\Scripts\python.exe" -m src.main
+".venv\Scripts\python.exe" -m src.app
 pause

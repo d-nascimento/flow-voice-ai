@@ -1,5 +1,6 @@
 # Core Audio and Input
 sounddevice>=0.4.6
+soundcard>=0.4.6
 numpy>=1.26.0
 scipy>=1.11.0
 pynput>=1.7.6
@@ -13,6 +14,7 @@ requests>=2.31.0
 python-dotenv>=1.0.0
 
 # Interface and Quality
+PyQt6>=6.12.0
 pystray>=0.19.5
 Pillow>=10.2.0
 pytest>=8.0.0

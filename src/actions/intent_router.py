@@ -16,6 +16,12 @@ Sua função é classificar a fala transcrita em:
 1. "command": Uma ordem imperativa para controlar o computador.
 2. "dictation": Texto destinado a ser escrito/digitado onde o cursor está localizado.
 
+REGRA DE PRESERVAÇÃO RIGOROSA DA FALA (FIDELIDADE MÁXIMA):
+- Seja EXTREMAMENTE fiel ao que o usuário falou. NÃO invente, não reescreva com outras palavras e não faça paráfrase.
+- Apenas corrija pontuação básica, maiúsculas no início de frases e remova hesitações puras (ex: "ééé", "humm", "tipo").
+- Preserve o vocabulário, o tom, as gírias e o estilo original do usuário exatamente como dito.
+- NUNCA TRADUZA! Se a fala for em inglês, o texto DEVE PERMANECER 100% EM INGLÊS. Se for em português, PERMANECE EM PORTUGUÊS.
+
 AÇÕES DE COMANDO SUPORTADAS:
 - open_app: Iniciar aplicativo (parameter: "chrome", "code", "notion", "obsidian", "spotify", "whatsapp", "terminal", "notepad", "calc")
 - open_folder: Abrir pasta (parameter: "downloads", "documentos", "desktop", "imagens")
@@ -33,10 +39,10 @@ REGRAS DE RESPOSTA (JSON OBRIGATÓRIO):
   "type": "command" | "dictation",
   "action": "open_app" | "open_folder" | "search_web" | "volume_up" | "volume_down" | "volume_mute" | "screenshot" | "show_desktop" | "close_window" | "lock_pc" | null,
   "parameter": "string com o parâmetro se aplicável" | null,
-  "text": "Se for dictation: o texto polido sem hesitações. Se for command: mensagem curta de confirmação (ex: 'Abrindo o Chrome...')."
+  "text": "Se for dictation: o texto fielmente transcrito e pontuado. Se for command: mensagem curta de confirmação."
 }
 
-Se houver qualquer dúvida se é comando ou conversa, prefira "dictation".
+Se houver qualquer dúvida se é comando ou ditação, escolha SEMPRE "dictation".
 """
 
 
@@ -50,7 +56,7 @@ class VoiceIntent:
 
 class IntentRouter:
     """
-    Roteador de inteligência que decide se a fala é um comando do Windows ou texto de ditação.
+    Roteador de inteligência que decide se a fala é um comando do Windows ou texto de ditação fiel.
     """
 
     def __init__(self, api_key: Optional[str] = None, model: str = GEMINI_MODEL) -> None:
@@ -67,9 +73,6 @@ class IntentRouter:
         return self._client
 
     def route_intent(self, raw_text: str, context: Optional[WindowContext] = None) -> VoiceIntent:
-        """
-        Analisa a fala e retorna VoiceIntent estruturado.
-        """
         cleaned = raw_text.strip()
         if not cleaned:
             return VoiceIntent(type="dictation", text="")
@@ -80,22 +83,21 @@ class IntentRouter:
             return VoiceIntent(type="command", action="volume_up", text="Volume aumentado.")
         if lower in ("abaixar volume", "abaixa o volume", "diminuir volume", "menos volume"):
             return VoiceIntent(type="command", action="volume_down", text="Volume diminuído.")
-        if lower in ("mutar som", "mudo", "tirar som", "desmutar"):
+        if lower in ("mutar som", "mudo", "tirar som", "desmutar", "mutar áudio"):
             return VoiceIntent(type="command", action="volume_mute", text="Áudio mutado/desmutado.")
-        if lower in ("tirar print", "tira print", "captura de tela", "screenshot"):
+        if lower in ("tirar print", "tira print", "captura de tela", "screenshot", "print da tela"):
             return VoiceIntent(type="command", action="screenshot", text="Captura de tela realizada.")
-        if lower in ("mostrar área de trabalho", "mostra a área de trabalho", "minimizar tudo"):
+        if lower in ("mostrar área de trabalho", "mostra a área de trabalho", "minimizar tudo", "mostrar desktop"):
             return VoiceIntent(type="command", action="show_desktop", text="Exibindo área de trabalho.")
-        if lower in ("fechar janela", "fecha a janela", "fechar aba", "fecha a aba"):
+        if lower in ("fechar janela", "fecha a janela", "fechar aba", "fecha a aba", "fechar essa janela"):
             return VoiceIntent(type="command", action="close_window", text="Janela/aba fechada.")
-        if lower in ("bloquear computador", "travar tela", "bloquear pc"):
+        if lower in ("bloquear computador", "travar tela", "bloquear pc", "bloquear a tela"):
             return VoiceIntent(type="command", action="lock_pc", text="Computador bloqueado.")
 
-        # Análise profunda via Gemini estruturado
-        start_time = time.perf_counter()
         try:
-            app_info = f"App ativo: {context.process_name} ({context.app_category})" if context else "Geral"
-            prompt = f"Contexto: {app_info}\nFala do usuário: \"{cleaned}\""
+            category_info = context.app_category if context else "general"
+            app_info = f"App ativo: {context.process_name} ({category_info})" if context else "Geral"
+            prompt = f"Contexto: {app_info}\nFala original transcrita: \"{cleaned}\""
 
             response = self.client.models.generate_content(
                 model=self.model,
@@ -116,16 +118,12 @@ class IntentRouter:
             parameter = data.get("parameter")
             refined_text = data.get("text", cleaned)
 
-            elapsed_ms = (time.perf_counter() - start_time) * 1000
-            logger.info("Roteamento concluído em %.1fms | Tipo: %s | Ação: %s", elapsed_ms, intent_type, action)
-
             return VoiceIntent(
                 type=intent_type,
                 action=action,
                 parameter=parameter,
                 text=refined_text or cleaned,
             )
-
         except Exception as e:
-            logger.warning("Falha no roteamento de intenção (fallback para ditação): %s", e)
+            logger.warning("Falha no roteamento de intenção com Gemini: %s. Fallback para transcrição original.", e)
             return VoiceIntent(type="dictation", text=cleaned)

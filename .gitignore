@@ -5,7 +5,8 @@ __pycache__/
 env/
 venv/
 .env
-*.wav
-*.mp3
+# Arquivos de áudio gerados dinamicamente na raiz (preserva src/meetings/ e assets)
+/meetings/
+!assets/sounds/*.wav
 .pytest_cache/
 .mypy_cache/
