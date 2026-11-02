@@ -8,36 +8,34 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Bricolage Grotesque -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            sand: {
-              app: '#eeebe3',
-              card: '#fcfcfb',
-              container: '#f5f4f0',
-              hover: '#e8e5dc',
-              border: '#e2ded5',
-              focus: '#b8b2a5',
-            },
-            charcoal: '#18181b',
-            mocha: '#6b665f',
-            muted: '#9a9489',
-            lilac: {
-              DEFAULT: '#834bb0',
-              bg: '#f5ebfc',
-            },
-            amberAccent: {
-              DEFAULT: '#ff9f45',
-              bg: '#fff1e0',
-              text: '#b45309',
-            },
-            tealAccent: '#1d5854',
+            app: {
+              bg: '#f8fafd',
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+              border: '#e2e8f0',
+              primary: '#0f172a',
+              secondary: '#475569',
+              muted: '#94a3b8',
+              accent: '#2563eb',
+            }
           },
           fontFamily: {
-            serif: ['Georgia', 'Fraunces', 'serif'],
-            sans: ['Segoe UI', 'Inter', 'sans-serif'],
+            brand: ['"Bricolage Grotesque"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            'card': '0 2px 12px rgba(15, 23, 42, 0.04)',
+            'soft': '0 8px 30px rgba(0, 0, 0, 0.04)',
+            'nav': '0 -4px 20px rgba(0, 0, 0, 0.03)',
           }
         }
       }
@@ -46,49 +44,56 @@
   <style>
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #dcd7ce; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #b8b2a5; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     .smooth-transition { transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
   </style>
 </head>
-<body class="bg-sand-app text-charcoal font-sans select-none overflow-hidden h-screen flex">
+<body class="bg-app-bg text-app-primary font-sans select-none overflow-hidden h-screen flex">
 
-  <!-- 1. SIDEBAR DE NAVEGAÇÃO -->
-  <aside class="w-56 bg-sand-app border-r border-sand-border flex flex-col justify-between p-4">
-    <div class="space-y-4">
-      <!-- Logo Wispr Flow -->
-      <div class="flex items-center justify-between px-2 pt-1">
-        <div class="flex items-center space-x-2">
-          <span class="font-bold text-lg tracking-tight flex items-center">
-            <span class="text-charcoal tracking-tighter mr-1 font-mono">|||</span> Flow
-          </span>
-          <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-lilac-bg text-lilac">Pro</span>
+  <!-- 1. SIDEBAR DE NAVEGAÇÃO DESKTOP CLEAN -->
+  <aside class="w-60 bg-white border-r border-app-border flex flex-col justify-between p-4 shadow-sm">
+    <div class="space-y-5">
+      <!-- Marca Flow Voice AI com o novo logotipo e tipografia distintiva -->
+      <div class="flex items-center space-x-2.5 px-2 pt-1">
+        <div class="w-8 h-8 rounded-xl bg-app-primary flex items-center justify-center shadow-xs">
+          <svg class="w-5 h-5" viewBox="0 0 28 28" fill="none">
+            <rect x="4.4" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+            <rect x="8.8" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+            <rect x="13.2" y="5" width="2.4" height="18" rx="1.2" fill="#ffffff" />
+            <rect x="17.6" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+            <rect x="22.0" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+          </svg>
+        </div>
+        <div class="flex items-baseline space-x-1.5">
+          <span class="font-brand font-extrabold text-xl tracking-tight text-app-primary">Flow</span>
+          <span class="font-sans font-bold text-xs tracking-wider uppercase text-blue-600">Voice AI</span>
         </div>
       </div>
 
       <!-- Links de Navegação Unificados -->
-      <nav class="space-y-1 pt-2">
-        <button onclick="switchTab('dictation')" id="nav-dictation" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition bg-sand-card text-charcoal shadow-sm border border-sand-border">
-          <i data-lucide="mic" class="w-4 h-4 text-charcoal"></i>
+      <nav class="space-y-1">
+        <button onclick="switchTab('dictation')" id="nav-dictation" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold smooth-transition bg-app-primary text-white shadow-sm">
+          <i data-lucide="mic" class="w-4 h-4"></i>
           <span>Dictation</span>
         </button>
 
-        <button onclick="switchTab('modes')" id="nav-modes" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
-          <i data-lucide="wand-2" class="w-4 h-4"></i>
+        <button onclick="switchTab('modes')" id="nav-modes" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold smooth-transition text-app-secondary hover:bg-app-subtle hover:text-app-primary">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
           <span>Skills & Modos</span>
         </button>
 
-        <button onclick="switchTab('meetings')" id="nav-meetings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+        <button onclick="switchTab('meetings')" id="nav-meetings" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold smooth-transition text-app-secondary hover:bg-app-subtle hover:text-app-primary">
           <i data-lucide="calendar" class="w-4 h-4"></i>
           <span>Notetaker</span>
         </button>
 
-        <button onclick="switchTab('insights')" id="nav-insights" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+        <button onclick="switchTab('insights')" id="nav-insights" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold smooth-transition text-app-secondary hover:bg-app-subtle hover:text-app-primary">
           <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
           <span>Insights</span>
         </button>
 
-        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold smooth-transition text-app-secondary hover:bg-app-subtle hover:text-app-primary">
           <i data-lucide="settings" class="w-4 h-4"></i>
           <span>Configurações</span>
         </button>
@@ -96,52 +101,53 @@
     </div>
 
     <!-- Mini Card de Status no Rodapé -->
-    <div class="p-3 bg-lilac-bg/80 border border-lilac/10 rounded-2xl space-y-1">
+    <div class="p-3.5 bg-blue-50/70 border border-blue-100 rounded-2xl space-y-1">
       <div class="flex items-center space-x-2">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="text-xs font-semibold text-lilac">Flow Voice AI Ativo</span>
+        <span class="text-xs font-bold text-blue-900">Flow Voice AI Ativo</span>
       </div>
-      <p id="footer-active-mode" class="text-[11px] text-mocha leading-relaxed">Modo: Ditado Fiel (Core)</p>
+      <p id="footer-active-mode" class="text-[11px] text-slate-600 font-medium">Modo: Ditado Fiel (Core)</p>
     </div>
   </aside>
 
-  <!-- 2. ÁREA CENTRAL DE CONTEÚDO -->
+  <!-- 2. ÁREA CENTRAL DE CONTEÚDO (CLEAN WHITE) -->
   <main class="flex-1 flex flex-col p-6 overflow-y-auto">
 
     <!-- TELA 1: DICTATION -->
     <section id="view-dictation" class="tab-view space-y-5">
       <div class="flex items-center space-x-2">
-        <span class="text-base font-medium">Hey, entre no fluxo com</span>
-        <span class="bg-amberAccent-bg border border-amberAccent text-amberAccent-text px-2.5 py-0.5 rounded-lg text-xs font-semibold shadow-xs">Ctrl + Espaço</span>
+        <span class="text-sm font-semibold text-app-secondary">Hey, entre no fluxo com</span>
+        <span class="bg-amber-50 border border-amber-300 text-amber-900 px-2.5 py-0.5 rounded-lg text-xs font-bold shadow-xs">Ctrl + Espaço</span>
       </div>
 
-      <!-- Banner Editorial Escuro -->
-      <div class="bg-neutral-900 rounded-2xl p-6 text-white space-y-2 relative overflow-hidden shadow-sm">
-        <h2 class="font-serif text-2xl tracking-wide">Make Flow sound like you</h2>
-        <p class="text-xs text-neutral-400 max-w-lg leading-relaxed">Fale naturalmente em Português ou Inglês. O modelo preserva o idioma original, pontua com rigor e elimina gaguejos.</p>
+      <!-- Banner Editorial Clean -->
+      <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 text-white space-y-2 shadow-md">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Inteligência de Voz para Desktop</span>
+        <h2 class="text-2xl font-bold tracking-tight">Sua voz, seu fluxo de trabalho.</h2>
+        <p class="text-xs text-slate-300 max-w-lg leading-relaxed">Fale naturalmente no Word, VS Code, Slack ou WhatsApp. O modelo pontua e transcreve no exato ponto do seu cursor.</p>
       </div>
 
-      <!-- Mini Bar de Seleção Rápida de Skill no Dictation -->
-      <div class="flex items-center justify-between p-3 bg-sand-card border border-sand-border rounded-2xl shadow-xs">
+      <!-- Mini Bar de Seleção Rápida de Skill -->
+      <div class="flex items-center justify-between p-3.5 bg-white border border-app-border rounded-2xl shadow-card">
         <div class="flex items-center space-x-2 text-xs">
-          <span class="text-muted font-bold uppercase tracking-wider text-[10px]">Skill Ativa:</span>
-          <span id="dictation-mode-badge" class="font-semibold text-charcoal bg-sand-container px-2 py-0.5 rounded-md">Ditado Fiel (Core)</span>
+          <span class="text-app-muted font-bold uppercase tracking-wider text-[10px]">Skill Ativa:</span>
+          <span id="dictation-mode-badge" class="font-bold text-app-primary bg-app-subtle px-2.5 py-1 rounded-md">Ditado Fiel (Core)</span>
         </div>
-        <button onclick="switchTab('modes')" class="text-xs text-lilac hover:underline font-medium">Alterar Skill →</button>
+        <button onclick="switchTab('modes')" class="text-xs text-blue-600 hover:text-blue-700 font-semibold">Alterar Skill →</button>
       </div>
 
       <!-- Histórico de Transcrições -->
       <div class="space-y-3 pt-1">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-muted">Transcrições Recentes</span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-app-muted">Transcrições Recentes</span>
           <div class="space-x-2">
-            <button onclick="copyActiveHistory()" class="px-3 py-1 bg-sand-container hover:bg-sand-hover border border-sand-border rounded-lg text-xs font-medium smooth-transition">Copiar</button>
-            <button onclick="clearHistory()" class="px-3 py-1 bg-sand-container hover:bg-sand-hover border border-sand-border rounded-lg text-xs font-medium smooth-transition">Limpar</button>
+            <button onclick="copyActiveHistory()" class="px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-app-border rounded-xl text-xs font-semibold text-app-secondary shadow-xs smooth-transition">Copiar</button>
+            <button onclick="clearHistory()" class="px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-app-border rounded-xl text-xs font-semibold text-app-secondary shadow-xs smooth-transition">Limpar</button>
           </div>
         </div>
 
-        <div id="history-container" class="bg-sand-card border border-sand-border rounded-2xl p-3 min-h-[190px] max-h-[240px] overflow-y-auto divide-y divide-sand-border text-sm">
-          <div class="py-8 text-center text-muted text-xs">Pressione Ctrl + Espaço em qualquer app para ditar.</div>
+        <div id="history-container" class="bg-white border border-app-border rounded-2xl p-4 min-h-[200px] max-h-[250px] overflow-y-auto divide-y divide-slate-100 text-sm shadow-card">
+          <div class="py-8 text-center text-app-muted text-xs">Pressione Ctrl + Espaço em qualquer aplicativo para ditar.</div>
         </div>
       </div>
     </section>
@@ -149,59 +155,59 @@
     <!-- TELA 2: SKILLS & MODOS (EXACT, POLISH, PROMPT) -->
     <section id="view-modes" class="tab-view hidden space-y-5">
       <div>
-        <h2 class="font-serif text-2xl text-charcoal">Skills & Modos de Ditado</h2>
-        <p class="text-xs text-mocha">Escolha como a inteligência deve tratar sua voz ao soltar o atalho Push-to-Talk.</p>
+        <h2 class="text-2xl font-bold tracking-tight text-app-primary">Skills de Voz</h2>
+        <p class="text-xs text-app-secondary">Escolha como o modelo deve processar a fala ao soltar o atalho Push-to-Talk.</p>
       </div>
 
       <div class="grid grid-cols-3 gap-4 pt-2">
         <!-- 1. DITADO FIEL (CORE) -->
-        <div id="card-mode-exact" onclick="selectMode('exact')" class="cursor-pointer border-2 rounded-2xl p-5 space-y-3 bg-sand-card smooth-transition relative flex flex-col justify-between">
+        <div id="card-mode-exact" onclick="selectMode('exact')" class="cursor-pointer border-2 rounded-3xl p-5 space-y-3 bg-white smooth-transition relative flex flex-col justify-between shadow-card">
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sand-container text-mocha">Padrão Superflow</span>
-              <span id="badge-active-exact" class="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-bg text-lilac hidden">Ativo</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md bg-app-subtle text-slate-700">Padrão Superflow</span>
+              <span id="badge-active-exact" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden">Ativo</span>
             </div>
-            <h3 class="font-bold text-sm text-charcoal flex items-center space-x-1.5">
+            <h3 class="font-bold text-base text-app-primary flex items-center space-x-1.5">
               <span>🎙️ Ditado Fiel (Core)</span>
             </h3>
-            <p class="text-xs text-mocha leading-relaxed">Captura exatamente o que você falou. Ajusta apenas ortografia básica, vírgulas e pontos, sem jamais inventar, resumir ou trocar palavras.</p>
+            <p class="text-xs text-app-secondary leading-relaxed">Fidelidade absoluta às palavras faladas. Apenas ajusta pontuação e ortografia básica sem trocar vocabulário ou ordem.</p>
           </div>
-          <div class="p-2.5 bg-sand-container rounded-xl text-[11px] text-muted italic">
+          <div class="p-3 bg-app-subtle rounded-xl text-[11px] text-app-muted italic">
             "manda o arquivo pro joao" → "Manda o arquivo pro João."
           </div>
         </div>
 
         <!-- 2. OTIMIZAÇÃO DE TEXTO (POLISH) -->
-        <div id="card-mode-polish" onclick="selectMode('polish')" class="cursor-pointer border-2 rounded-2xl p-5 space-y-3 bg-sand-card smooth-transition relative flex flex-col justify-between">
+        <div id="card-mode-polish" onclick="selectMode('polish')" class="cursor-pointer border-2 rounded-3xl p-5 space-y-3 bg-white smooth-transition relative flex flex-col justify-between shadow-card">
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sand-container text-mocha">Reescrita Fluida</span>
-              <span id="badge-active-polish" class="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-bg text-lilac hidden">Ativo</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md bg-app-subtle text-slate-700">Reescrita Fluida</span>
+              <span id="badge-active-polish" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden">Ativo</span>
             </div>
-            <h3 class="font-bold text-sm text-charcoal flex items-center space-x-1.5">
+            <h3 class="font-bold text-base text-app-primary flex items-center space-x-1.5">
               <span>🪄 Otimização de Texto</span>
             </h3>
-            <p class="text-xs text-mocha leading-relaxed">Reorganiza o raciocínio, enriquece o vocabulário e troca palavras para transformar pensamentos soltos em um texto formal, coeso e elegante.</p>
+            <p class="text-xs text-app-secondary leading-relaxed">Reorganiza raciocínios, melhora encadeamentos e transforma a fala em um texto formal, coeso e elegante.</p>
           </div>
-          <div class="p-2.5 bg-sand-container rounded-xl text-[11px] text-muted italic">
-            "fala que ta pronto e manda" → "Olá, o documento foi finalizado e segue para sua avaliação."
+          <div class="p-3 bg-app-subtle rounded-xl text-[11px] text-app-muted italic">
+            "fala que ta pronto e manda" → "Olá, o relatório foi finalizado e segue para validação."
           </div>
         </div>
 
         <!-- 3. PROMPT ENGINEERING -->
-        <div id="card-mode-prompt" onclick="selectMode('prompt')" class="cursor-pointer border-2 rounded-2xl p-5 space-y-3 bg-sand-card smooth-transition relative flex flex-col justify-between">
+        <div id="card-mode-prompt" onclick="selectMode('prompt')" class="cursor-pointer border-2 rounded-3xl p-5 space-y-3 bg-white smooth-transition relative flex flex-col justify-between shadow-card">
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sand-container text-mocha">Para LLMs</span>
-              <span id="badge-active-prompt" class="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-bg text-lilac hidden">Ativo</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md bg-app-subtle text-slate-700">Para LLMs</span>
+              <span id="badge-active-prompt" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden">Ativo</span>
             </div>
-            <h3 class="font-bold text-sm text-charcoal flex items-center space-x-1.5">
+            <h3 class="font-bold text-base text-app-primary flex items-center space-x-1.5">
               <span>🤖 Prompt Engineering</span>
             </h3>
-            <p class="text-xs text-mocha leading-relaxed">Decodifica intenções e comandos soltos e estrutura no formato ideal para IA (Role, Task, Contexto, Regras e Formato de Saída).</p>
+            <p class="text-xs text-app-secondary leading-relaxed">Decodifica ideias e comandos e gera um prompt estruturado: Role, Task, Contexto e Critérios de Aceite.</p>
           </div>
-          <div class="p-2.5 bg-sand-container rounded-xl text-[11px] text-muted italic">
-            "faz um post do café novo suave" → "**Role:** Copywriter | **Task:** Criar post..."
+          <div class="p-3 bg-app-subtle rounded-xl text-[11px] text-app-muted italic">
+            "cria tela de login limpa" → "**Role:** Senior UI Dev | **Task:** Clean login screen..."
           </div>
         </div>
       </div>
@@ -211,37 +217,37 @@
     <section id="view-meetings" class="tab-view hidden space-y-5">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="font-serif text-2xl text-charcoal">Notetaker & Reuniões</h2>
-          <p class="text-xs text-mocha">Gravação contínua mista ou importação de arquivos para geração de atas executivas.</p>
+          <h2 class="text-2xl font-bold tracking-tight text-app-primary">Reuniões & Notetaker</h2>
+          <p class="text-xs text-app-secondary">Gravação contínua mista ou importação de arquivos para geração de atas executivas.</p>
         </div>
       </div>
 
       <!-- Painel de Gravação e Upload -->
-      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-4 shadow-sm">
+      <div class="bg-white border border-app-border rounded-3xl p-5 space-y-4 shadow-card">
         <div class="flex items-center space-x-4">
-          <button id="btn-toggle-meeting" onclick="toggleMeetingRecording()" class="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium text-xs px-4 py-2.5 rounded-xl smooth-transition shadow-sm">
+          <button id="btn-toggle-meeting" onclick="toggleMeetingRecording()" class="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl smooth-transition shadow-sm active:scale-98">
             <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
             <span id="lbl-btn-meeting">Gravar Reunião ao Vivo</span>
           </button>
-          <span id="meeting-timer" class="font-semibold text-sm font-mono text-charcoal">⏱️ 00:00:00</span>
+          <span id="meeting-timer" class="font-mono text-xs font-bold text-app-primary bg-app-subtle px-3 py-1.5 rounded-xl">⏱️ 00:00:00</span>
           
-          <div class="h-5 w-px bg-sand-border"></div>
+          <div class="h-5 w-px bg-slate-200"></div>
 
-          <label class="cursor-pointer flex items-center space-x-2 bg-sand-container hover:bg-sand-hover border border-sand-border text-charcoal px-3 py-2 rounded-xl text-xs font-medium smooth-transition">
+          <label class="cursor-pointer flex items-center space-x-2 bg-white hover:bg-slate-100 border border-app-border text-app-primary px-3.5 py-2 rounded-xl text-xs font-bold smooth-transition shadow-xs">
             <i data-lucide="upload" class="w-3.5 h-3.5"></i>
             <span>Importar Áudio</span>
             <input type="file" id="file-uploader" accept=".mp3,.m4a,.wav,.aac,.ogg,.flac" class="hidden" onchange="handleFileUpload(event)">
           </label>
-          <span id="uploaded-filename" class="text-xs text-muted truncate max-w-xs">Nenhum arquivo importado</span>
+          <span id="uploaded-filename" class="text-xs text-app-muted truncate max-w-xs font-medium">Nenhum arquivo importado</span>
         </div>
 
-        <div class="flex items-center space-x-6 pt-2 text-xs text-mocha">
+        <div class="flex items-center space-x-6 pt-1 text-xs text-app-secondary border-t border-slate-100">
           <label class="flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="chk-loopback" checked class="rounded accent-tealAccent">
-            <span>Capturar áudio dos outros participantes (fone)</span>
+            <input type="checkbox" id="chk-loopback" checked class="rounded accent-blue-600">
+            <span>Capturar áudio dos outros participantes (fone de ouvido)</span>
           </label>
           <label class="flex items-center space-x-2 cursor-pointer">
-            <input type="checkbox" id="chk-obsidian" checked class="rounded accent-tealAccent">
+            <input type="checkbox" id="chk-obsidian" checked class="rounded accent-blue-600">
             <span>Salvar automaticamente no Obsidian (00_Inbox)</span>
           </label>
         </div>
@@ -250,44 +256,44 @@
       <!-- Visualizador da Ata -->
       <div class="space-y-2 flex-1 flex flex-col">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-muted">Ata Executiva Estruturada & Transcrição</span>
-          <span id="meeting-status-msg" class="text-xs text-mocha italic">Pronto</span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-app-muted">Ata Executiva Estruturada & Transcrição</span>
+          <span id="meeting-status-msg" class="text-xs text-app-secondary italic">Pronto</span>
         </div>
-        <textarea id="meeting-markdown" readonly placeholder="A ata executiva gerada pelo Gemini Long-Context será exibida aqui com BLUF, Decisões e Tabela de Ações..." class="w-full h-56 p-4 bg-sand-card border border-sand-border rounded-2xl text-xs text-charcoal font-mono resize-none focus:outline-none focus:border-sand-focus"></textarea>
+        <textarea id="meeting-markdown" readonly placeholder="A ata executiva gerada pelo Gemini Long-Context será exibida aqui com BLUF, Decisões e Tabela de Ações..." class="w-full h-56 p-4 bg-white border border-app-border rounded-2xl text-xs text-app-primary font-mono resize-none focus:outline-none focus:border-blue-500 shadow-card"></textarea>
         
         <div class="flex justify-between pt-1">
-          <button id="btn-open-obsidian" onclick="openLastObsidian()" disabled class="px-4 py-2 bg-sand-container disabled:opacity-40 border border-sand-border rounded-xl text-xs font-medium smooth-transition">Abrir no Obsidian</button>
-          <button onclick="copyMeetingMarkdown()" class="px-4 py-2 bg-charcoal hover:bg-neutral-800 text-white rounded-xl text-xs font-medium smooth-transition">Copiar Markdown</button>
+          <button id="btn-open-obsidian" onclick="openLastObsidian()" disabled class="px-4 py-2 bg-white disabled:opacity-40 border border-app-border rounded-xl text-xs font-bold text-app-primary shadow-xs smooth-transition">Abrir no Obsidian</button>
+          <button onclick="copyMeetingMarkdown()" class="px-4 py-2 bg-app-primary hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm smooth-transition">Copiar Markdown</button>
         </div>
       </div>
     </section>
 
     <!-- TELA 4: INSIGHTS -->
     <section id="view-insights" class="tab-view hidden space-y-6">
-      <h2 class="font-serif text-2xl text-charcoal">Insights & Produtividade</h2>
+      <h2 class="text-2xl font-bold tracking-tight text-app-primary">Insights & Produtividade</h2>
       <div class="grid grid-cols-3 gap-4">
-        <div class="bg-sand-card border border-sand-border rounded-2xl p-4 space-y-1 shadow-sm">
-          <span class="font-bold text-2xl tracking-tight">144</span>
-          <p class="text-[10px] font-bold uppercase text-muted tracking-wider">Palavras por Minuto</p>
-          <p class="text-[11px] text-tealAccent font-medium pt-1">Top 0.2% velocidade</p>
+        <div class="bg-white border border-app-border rounded-3xl p-5 space-y-1 shadow-card">
+          <span class="font-extrabold text-2xl tracking-tight text-app-primary">144</span>
+          <p class="text-[10px] font-bold uppercase text-app-muted tracking-wider">Palavras por Minuto</p>
+          <p class="text-[11px] text-blue-600 font-semibold pt-1">Top 0.2% velocidade</p>
         </div>
-        <div class="bg-sand-card border border-sand-border rounded-2xl p-4 space-y-1 shadow-sm">
-          <span class="font-bold text-2xl tracking-tight">~240ms</span>
-          <p class="text-[10px] font-bold uppercase text-muted tracking-wider">Latência Média</p>
-          <p class="text-[11px] text-tealAccent font-medium pt-1">Groq Whisper Turbo</p>
+        <div class="bg-white border border-app-border rounded-3xl p-5 space-y-1 shadow-card">
+          <span class="font-extrabold text-2xl tracking-tight text-app-primary">~240ms</span>
+          <p class="text-[10px] font-bold uppercase text-app-muted tracking-wider">Latência Média</p>
+          <p class="text-[11px] text-blue-600 font-semibold pt-1">Groq Whisper Turbo</p>
         </div>
-        <div class="bg-sand-card border border-sand-border rounded-2xl p-4 space-y-1 shadow-sm">
-          <span class="font-bold text-2xl tracking-tight">100%</span>
-          <p class="text-[10px] font-bold uppercase text-muted tracking-wider">Disponibilidade</p>
-          <p class="text-[11px] text-tealAccent font-medium pt-1">Desktop Windows Ativo</p>
+        <div class="bg-white border border-app-border rounded-3xl p-5 space-y-1 shadow-card">
+          <span class="font-extrabold text-2xl tracking-tight text-app-primary">100%</span>
+          <p class="text-[10px] font-bold uppercase text-app-muted tracking-wider">Disponibilidade</p>
+          <p class="text-[11px] text-blue-600 font-semibold pt-1">Desktop Windows Ativo</p>
         </div>
       </div>
 
-      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-2">
-        <h3 class="text-sm font-semibold">Arquitetura de Dupla Inteligência</h3>
-        <p class="text-xs text-mocha leading-relaxed">
+      <div class="bg-white border border-app-border rounded-3xl p-6 space-y-2 shadow-card">
+        <h3 class="text-sm font-bold text-app-primary">Arquitetura de Dupla Inteligência</h3>
+        <p class="text-xs text-app-secondary leading-relaxed">
           • Transcrição acústica instantânea via Groq Whisper Large-v3-turbo.<br>
-          • 3 Skills de ditado especializadas (Core Fiel, Otimização de Texto e Prompt Engineering).<br>
+          • 3 Skills de voz especializadas (Core Fiel, Otimização de Texto e Prompt Engineering).<br>
           • Síntese executiva de reuniões com contexto de até 9,5 horas via Gemini Long-Context.
         </p>
       </div>
@@ -295,29 +301,29 @@
 
     <!-- TELA 5: CONFIGURAÇÕES -->
     <section id="view-settings" class="tab-view hidden space-y-5">
-      <h2 class="font-serif text-2xl text-charcoal">Configurações Gerais</h2>
+      <h2 class="text-2xl font-bold tracking-tight text-app-primary">Configurações Gerais</h2>
       
-      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-4 shadow-sm">
-        <div class="space-y-1">
-          <label class="text-xs font-semibold text-charcoal">Dispositivo de Microfone</label>
-          <select id="select-mic" class="w-full bg-sand-container border border-sand-border rounded-xl p-2.5 text-xs text-charcoal focus:outline-none"></select>
+      <div class="bg-white border border-app-border rounded-3xl p-6 space-y-4 shadow-card">
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-app-primary">Dispositivo de Microfone</label>
+          <select id="select-mic" class="w-full bg-app-subtle border border-app-border rounded-xl p-2.5 text-xs text-app-primary focus:outline-none"></select>
         </div>
 
         <div class="pt-2">
           <label class="flex items-center space-x-3 cursor-pointer">
-            <input type="checkbox" id="chk-os-actions" checked class="rounded accent-tealAccent">
-            <span class="text-xs text-charcoal">Habilitar Comandos de Voz no SO (abrir pastas, apps, volume)</span>
+            <input type="checkbox" id="chk-os-actions" checked class="rounded accent-blue-600">
+            <span class="text-xs text-app-primary font-semibold">Habilitar Comandos de Voz no SO (abrir pastas, apps, volume)</span>
           </label>
         </div>
       </div>
 
-      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-2">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Status das Conexões de IA</h3>
-        <div class="flex items-center space-x-2 text-xs text-emerald-700">
+      <div class="bg-white border border-app-border rounded-3xl p-6 space-y-2 shadow-card">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-app-muted">Status das Conexões de IA</h3>
+        <div class="flex items-center space-x-2 text-xs text-emerald-700 font-semibold">
           <span>●</span>
           <span>Groq Cloud API (Whisper Large-v3-turbo): Conectado</span>
         </div>
-        <div class="flex items-center space-x-2 text-xs text-emerald-700">
+        <div class="flex items-center space-x-2 text-xs text-emerald-700 font-semibold">
           <span>●</span>
           <span>Google Gemini API (Flash Lite & Long-Context): Conectado</span>
         </div>
@@ -351,14 +357,14 @@
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
 
       document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('bg-sand-card', 'shadow-sm', 'border', 'border-sand-border', 'text-charcoal');
-        btn.classList.add('text-mocha', 'hover:bg-sand-hover', 'hover:text-charcoal');
+        btn.classList.remove('bg-app-primary', 'text-white', 'shadow-sm');
+        btn.classList.add('text-app-secondary', 'hover:bg-app-subtle', 'hover:text-app-primary');
       });
 
       const activeBtn = document.getElementById(`nav-${tabId}`);
       if (activeBtn) {
-        activeBtn.classList.add('bg-sand-card', 'shadow-sm', 'border', 'border-sand-border', 'text-charcoal');
-        activeBtn.classList.remove('text-mocha', 'hover:bg-sand-hover');
+        activeBtn.classList.add('bg-app-primary', 'text-white', 'shadow-sm');
+        activeBtn.classList.remove('text-app-secondary', 'hover:bg-app-subtle');
       }
     }
 
@@ -393,12 +399,12 @@
         const badge = document.getElementById(`badge-active-${m}`);
         if (card && badge) {
           if (m === modeId) {
-            card.classList.add('border-lilac', 'shadow-sm');
-            card.classList.remove('border-sand-border');
+            card.classList.add('border-app-primary');
+            card.classList.remove('border-app-border');
             badge.classList.remove('hidden');
           } else {
-            card.classList.remove('border-lilac', 'shadow-sm');
-            card.classList.add('border-sand-border');
+            card.classList.remove('border-app-primary');
+            card.classList.add('border-app-border');
             badge.classList.add('hidden');
           }
         }
@@ -437,18 +443,18 @@
     function renderHistory(items) {
       const container = document.getElementById('history-container');
       if (!items || items.length === 0) {
-        container.innerHTML = '<div class="py-8 text-center text-muted text-xs">Pressione Ctrl + Espaço em qualquer app para ditar.</div>';
+        container.innerHTML = '<div class="py-8 text-center text-app-muted text-xs">Pressione Ctrl + Espaço em qualquer app para ditar.</div>';
         return;
       }
       container.innerHTML = items.map(item => `
         <div class="py-2.5 flex items-start justify-between space-x-3">
           <div class="flex items-center space-x-2">
-            <span class="text-[11px] font-mono text-muted">${item.time}</span>
-            <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${item.type === 'command' ? 'bg-amberAccent-bg text-amberAccent-text' : 'bg-sand-container text-mocha'}">
+            <span class="text-[11px] font-mono text-app-muted">${item.time}</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${item.type === 'command' ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-700'}">
               ${item.type === 'command' ? '⚡ Comando' : '✍️ Ditação'}
             </span>
           </div>
-          <p class="text-xs text-charcoal flex-1 select-text">${item.text}</p>
+          <p class="text-xs text-app-primary flex-1 select-text">${item.text}</p>
         </div>
       `).join('');
     }

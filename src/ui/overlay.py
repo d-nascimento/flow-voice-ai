@@ -6,27 +6,19 @@ from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QApplication
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QRectF
 from PyQt6.QtGui import QPainter, QColor, QFont, QBrush
 
-from src.ui.theme import (
-    COLOR_BG_CONTAINER,
-    COLOR_BORDER,
-    COLOR_TEXT_PRIMARY,
-    COLOR_ACCENT_LILAC,
-    COLOR_ACCENT_GREEN,
-)
-
 logger = logging.getLogger(__name__)
 
 
 class WaveformWidget(QWidget):
     """
-    Mini visualizador de onda sonora em estilo Wispr Flow.
-    Desenha barras dinâmicas em tom lilás/pastel arredondadas que oscilam.
+    Mini visualizador de onda sonora em estilo Flow Voice AI Clean.
+    Desenha barras dinâmicas brancas/azuis arredondadas com maior espessura.
     """
 
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
-        self.setFixedSize(36, 20)
-        self._bars = [0.3, 0.6, 1.0, 0.7, 0.4]
+        self.setFixedSize(40, 22)
+        self._bars = [0.38, 0.68, 1.0, 0.68, 0.38]
         self._is_active = False
 
     def set_active(self, active: bool) -> None:
@@ -35,7 +27,7 @@ class WaveformWidget(QWidget):
 
     def update_wave(self) -> None:
         if self._is_active:
-            self._bars = [random.uniform(0.2, 1.0) for _ in self._bars]
+            self._bars = [random.uniform(0.25, 1.0) for _ in self._bars]
             self.update()
 
     def paintEvent(self, event) -> None:  # type: ignore
@@ -43,31 +35,31 @@ class WaveformWidget(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         if not self._is_active:
-            color = QColor(170, 165, 155, 180)
+            color = QColor(148, 163, 184, 180)  # Slate muted
         else:
-            color = QColor(COLOR_ACCENT_LILAC)
+            color = QColor(255, 255, 255, 255)  # Branco nítido
 
         painter.setBrush(QBrush(color))
         painter.setPen(Qt.PenStyle.NoPen)
 
         w, h = self.width(), self.height()
-        bar_width = 3.0
+        bar_width = 3.5  # Mais grossa e nítida
         gap = 4.0
         total_width = len(self._bars) * bar_width + (len(self._bars) - 1) * gap
         start_x = (w - total_width) / 2.0
 
         for i, amp in enumerate(self._bars):
-            bar_height = max(4.0, h * (amp if self._is_active else 0.25))
+            bar_height = max(5.0, h * (amp if self._is_active else 0.3))
             x = start_x + i * (bar_width + gap)
             y = (h - bar_height) / 2.0
             rect = QRectF(x, y, bar_width, bar_height)
-            painter.drawRoundedRect(rect, 1.5, 1.5)
+            painter.drawRoundedRect(rect, 1.75, 1.75)
 
 
 class VoiceOverlay(QWidget):
     """
-    Floating Pill minimalista no estilo Wispr Flow (Warm Clean Sand).
-    Aparece suavemente sobre a tela sem roubar foco do cursor ativo.
+    Floating Pill minimalista no estilo Flow Voice AI Clean Navy.
+    Aparece suavemente sobre a tela sem roubar foco do cursor ativo (WS_EX_NOACTIVATE).
     """
 
     signal_start_listening = pyqtSignal()
@@ -104,18 +96,18 @@ class VoiceOverlay(QWidget):
             logger.debug("Win32 WS_EX_NOACTIVATE: %s", e)
 
     def _init_ui(self) -> None:
-        self.setFixedSize(210, 42)
+        self.setFixedSize(220, 44)
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(14, 6, 14, 6)
         layout.setSpacing(10)
 
         self.icon_label = QLabel("●", self)
-        self.icon_label.setStyleSheet(f"color: {COLOR_ACCENT_LILAC}; font-size: 13px;")
+        self.icon_label.setStyleSheet("color: #38bdf8; font-size: 13px;")
 
         self.status_label = QLabel("Ouvindo...", self)
-        self.status_label.setFont(QFont("Segoe UI", 10, QFont.Weight.DemiBold))
-        self.status_label.setStyleSheet(f"color: {COLOR_TEXT_PRIMARY};")
+        self.status_label.setFont(QFont("Segoe UI", 10, QFont.Weight.Bold))
+        self.status_label.setStyleSheet("color: #ffffff;")
 
         self.wave_widget = WaveformWidget(self)
 
@@ -154,13 +146,13 @@ class VoiceOverlay(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         rect = QRectF(0.5, 0.5, self.width() - 1.0, self.height() - 1.0)
-        bg_color = QColor(COLOR_BG_CONTAINER)
-        bg_color.setAlpha(245)
-        border_color = QColor(COLOR_BORDER)
+        # Navy Profundo (#0f172a) com borda discreta
+        bg_color = QColor(15, 23, 42, 245)
+        border_color = QColor(255, 255, 255, 35)
 
         painter.setBrush(QBrush(bg_color))
         painter.setPen(border_color)
-        painter.drawRoundedRect(rect, 20.0, 20.0)
+        painter.drawRoundedRect(rect, 22.0, 22.0)
 
     def show_listening(self) -> None:
         self.signal_start_listening.emit()
@@ -177,7 +169,7 @@ class VoiceOverlay(QWidget):
     def _on_listening(self) -> None:
         self.hide_timer.stop()
         self.icon_label.setText("●")
-        self.icon_label.setStyleSheet(f"color: {COLOR_ACCENT_LILAC}; font-size: 13px;")
+        self.icon_label.setStyleSheet("color: #38bdf8; font-size: 13px;")  # Azul celeste
         self.status_label.setText("Ouvindo...")
         self.wave_widget.set_active(True)
         self.wave_timer.start()
@@ -189,7 +181,7 @@ class VoiceOverlay(QWidget):
         self.wave_timer.stop()
         self.wave_widget.set_active(False)
         self.icon_label.setText("◐")
-        self.icon_label.setStyleSheet("color: #b45309; font-size: 13px;")
+        self.icon_label.setStyleSheet("color: #fbbf24; font-size: 13px;")  # Âmbar
         self.status_label.setText("Processando...")
         self.show()
 
@@ -197,7 +189,7 @@ class VoiceOverlay(QWidget):
         self.wave_timer.stop()
         self.wave_widget.set_active(False)
         self.icon_label.setText("✓")
-        self.icon_label.setStyleSheet(f"color: {COLOR_ACCENT_GREEN}; font-size: 13px; font-weight: bold;")
+        self.icon_label.setStyleSheet("color: #22c55e; font-size: 13px; font-weight: bold;")  # Verde
         self.status_label.setText(message[:20])
         self.hide_timer.start(750)
 
@@ -205,6 +197,6 @@ class VoiceOverlay(QWidget):
         self.wave_timer.stop()
         self.wave_widget.set_active(False)
         self.icon_label.setText("!")
-        self.icon_label.setStyleSheet("color: #dc2626; font-size: 13px; font-weight: bold;")
+        self.icon_label.setStyleSheet("color: #ef4444; font-size: 13px; font-weight: bold;")  # Vermelho
         self.status_label.setText(message[:20])
         self.hide_timer.start(900)

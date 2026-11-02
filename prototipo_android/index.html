@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Voice AI — Protótipo Interativo Android</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Bricolage Grotesque -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#f8fafd',
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+              border: '#e2e8f0',
+              primary: '#0f172a',
+              secondary: '#475569',
+              muted: '#94a3b8',
+              accent: '#2563eb',
+            }
+          },
+          fontFamily: {
+            brand: ['"Bricolage Grotesque"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft': '0 8px 30px rgba(0, 0, 0, 0.04)',
+            'card': '0 2px 12px rgba(15, 23, 42, 0.04)',
+            'nav': '0 -4px 20px rgba(0, 0, 0, 0.03)',
+            'button': '0 10px 25px -5px rgba(15, 23, 42, 0.25)',
+            'bubble': '0 12px 36px -4px rgba(15, 23, 42, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .smooth-spring { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+  </style>
+</head>
+<body class="bg-[#eef2f6] text-app-primary font-sans min-h-screen flex flex-col items-center justify-center p-4 antialiased">
+
+  <!-- CABEÇALHO DA PRANCHA DE PROTÓTIPO -->
+  <header class="w-full max-w-4xl flex items-center justify-between pb-6 border-b border-slate-300/60 mb-6">
+    <div class="flex items-center space-x-3">
+      <!-- Ícone Oficial com as barras brancas grossas -->
+      <div class="w-10 h-10 rounded-2xl bg-app-primary flex items-center justify-center shadow-md">
+        <svg class="w-6 h-6" viewBox="0 0 28 28" fill="none">
+          <rect x="4.4" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+          <rect x="8.8" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+          <rect x="13.2" y="5" width="2.4" height="18" rx="1.2" fill="#ffffff" />
+          <rect x="17.6" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+          <rect x="22.0" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2">
+          <span class="font-brand font-extrabold text-xl text-app-primary">Flow</span>
+          <span class="font-sans font-bold text-xs tracking-wider uppercase text-blue-600">Voice AI</span>
+          <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold tracking-wide uppercase">Android v1</span>
+        </h1>
+        <p class="text-xs text-slate-500 font-medium">Layout Clean White, tipografia distintiva e simulação de Floating Bubble sobre outros apps.</p>
+      </div>
+    </div>
+
+    <!-- SELETOR RÁPIDO DE TELAS -->
+    <div class="flex items-center space-x-1.5 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm">
+      <button onclick="goToScreen('screen-dictate')" id="btn-tab-dictate" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold smooth-spring bg-app-primary text-white shadow-xs">1. Ditado</button>
+      <button onclick="goToScreen('screen-overlay-demo')" id="btn-tab-overlay-demo" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold smooth-spring text-blue-600 hover:text-blue-700 bg-blue-50">✨ Flutuante (WhatsApp)</button>
+      <button onclick="goToScreen('screen-skills')" id="btn-tab-skills" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold smooth-spring text-slate-500 hover:text-slate-900">2. Skills</button>
+      <button onclick="goToScreen('screen-meetings')" id="btn-tab-meetings" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold smooth-spring text-slate-500 hover:text-slate-900">3. Reuniões</button>
+      <button onclick="goToScreen('screen-history')" id="btn-tab-history" class="tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold smooth-spring text-slate-500 hover:text-slate-900">4. Histórico</button>
+    </div>
+  </header>
+
+  <!-- MOLDURA DO DISPOSITIVO ANDROID (VIEWPORT REAL 390x810) -->
+  <div class="relative w-[390px] h-[810px] bg-app-bg rounded-[50px] p-2.5 shadow-2xl border-[10px] border-slate-900 ring-1 ring-black/5 flex flex-col overflow-hidden">
+    
+    <!-- CÂMERA FRONTAL (HOLE PUNCH ANDROID) -->
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-black rounded-full z-50"></div>
+
+    <!-- STATUS BAR ANDROID -->
+    <div class="pt-3 px-6 pb-2 flex justify-between items-center text-[11px] font-bold text-slate-700 select-none z-40">
+      <span>09:41</span>
+      <div class="flex items-center space-x-1.5 text-slate-700">
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+        <i data-lucide="battery-charging" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- VIEWPORT PRINCIPAL DO APLICATIVO -->
+    <div class="flex-1 flex flex-col overflow-hidden relative">
+
+      <!-- ============================================== -->
+      <!-- TELA 1: DITADO RÁPIDO (DENTRO DO APP)          -->
+      <!-- ============================================== -->
+      <section id="screen-dictate" class="screen-view flex-1 flex flex-col justify-between p-5 space-y-4">
+        <!-- Topbar Mobile com Nome Flow Voice AI e Logo -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-app-primary flex items-center justify-center shadow-xs">
+              <svg class="w-5 h-5" viewBox="0 0 28 28" fill="none">
+                <rect x="4.4" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+                <rect x="8.8" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+                <rect x="13.2" y="5" width="2.4" height="18" rx="1.2" fill="#ffffff" />
+                <rect x="17.6" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+                <rect x="22.0" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+              </svg>
+            </div>
+            <div class="flex items-baseline space-x-1.5">
+              <span class="font-brand font-extrabold text-xl tracking-tight text-app-primary">Flow</span>
+              <span class="font-sans font-bold text-xs tracking-wider uppercase text-blue-600">Voice AI</span>
+            </div>
+          </div>
+
+          <button onclick="goToScreen('screen-skills')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-white border border-app-border text-[11px] font-semibold text-app-secondary shadow-card active:scale-95 smooth-spring">
+            <span id="label-active-skill">🎙️ Ditado Fiel</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-app-muted"></i>
+          </button>
+        </div>
+
+        <!-- Banner com Chamada para o Floating Bubble -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-5 text-white space-y-2 shadow-md">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Acessibilidade Android</span>
+            <span class="text-[9px] font-bold bg-blue-500 text-white px-2 py-0.5 rounded-full">Ativo</span>
+          </div>
+          <h2 class="text-lg font-bold tracking-tight">Dite sobre qualquer app</h2>
+          <p class="text-xs text-slate-300 leading-relaxed">Com o botão flutuante ativado, dite no WhatsApp, Notion ou Gmail sem trocar de tela.</p>
+          <button onclick="goToScreen('screen-overlay-demo')" class="mt-1 px-3 py-1.5 bg-white text-slate-900 rounded-xl text-xs font-bold smooth-spring hover:bg-slate-100 flex items-center space-x-1">
+            <span>Ver demonstração no WhatsApp</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Card de Transcrição Central -->
+        <div class="flex-1 bg-app-card border border-app-border/70 rounded-3xl p-5 flex flex-col justify-between shadow-soft">
+          <div class="space-y-2 overflow-y-auto no-scrollbar">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-app-muted">Transcrição em Tempo Real</span>
+              <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Pronto</span>
+            </div>
+            <p id="live-transcription-text" class="text-sm text-app-primary leading-relaxed font-normal pt-1">
+              Olá, Danilo! O aplicativo agora apresenta a identidade visual Flow Voice AI completa, consistente com o desktop e pronto para operar sobre outros aplicativos.
+            </p>
+          </div>
+
+          <div class="pt-3 flex justify-between items-center border-t border-slate-100">
+            <button onclick="simulateCopy()" id="btn-copy-live" class="flex items-center space-x-1.5 px-3.5 py-1.5 bg-app-subtle hover:bg-slate-200/60 rounded-xl text-xs font-semibold text-app-secondary smooth-spring">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copiar Texto</span>
+            </button>
+            <span class="text-[10px] text-slate-400 font-medium">Toque para ditar</span>
+          </div>
+        </div>
+
+        <!-- Botão Central de Gravação na Thumb Zone -->
+        <div class="flex flex-col items-center justify-center pt-2 pb-1 space-y-2.5">
+          <div id="recording-waveform" class="flex items-center space-x-2 h-7">
+            <span class="w-2 h-2.5 bg-slate-300 rounded-full"></span>
+            <span class="w-2 h-4 bg-slate-300 rounded-full"></span>
+            <span class="w-2 h-7 bg-slate-300 rounded-full"></span>
+            <span class="w-2 h-4 bg-slate-300 rounded-full"></span>
+            <span class="w-2 h-2.5 bg-slate-300 rounded-full"></span>
+          </div>
+
+          <button onclick="toggleMobileDictate()" id="btn-mobile-mic" class="w-20 h-20 rounded-full bg-app-primary text-white flex items-center justify-center shadow-button active:scale-95 smooth-spring">
+            <i data-lucide="mic" class="w-8 h-8"></i>
+          </button>
+          <span id="lbl-mic-state" class="text-xs text-app-muted font-semibold tracking-wide">Toque no microfone para ditar</span>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- TELA ESPECIAL: SIMULAÇÃO DO OVERLAY FLUTUANTE NO WHATSAPP-->
+      <!-- ======================================================== -->
+      <section id="screen-overlay-demo" class="screen-view hidden flex-1 flex flex-col justify-between bg-[#efeae2] relative overflow-hidden">
+        <!-- Mock do Topo do WhatsApp -->
+        <div class="bg-[#075e54] text-white p-3 pt-2 flex items-center justify-between shadow-sm z-10">
+          <div class="flex items-center space-x-2.5">
+            <i data-lucide="arrow-left" class="w-4 h-4 cursor-pointer" onclick="goToScreen('screen-dictate')"></i>
+            <div class="w-8 h-8 rounded-full bg-slate-300 overflow-hidden flex items-center justify-center text-slate-700 font-bold text-xs">
+              GP
+            </div>
+            <div>
+              <p class="text-xs font-bold leading-tight">Grupo de Produto</p>
+              <p class="text-[10px] text-emerald-200">online</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-3 text-white">
+            <i data-lucide="video" class="w-4 h-4"></i>
+            <i data-lucide="phone" class="w-4 h-4"></i>
+            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+          </div>
+        </div>
+
+        <!-- Chat de Fundo no WhatsApp -->
+        <div class="flex-1 p-4 space-y-3 overflow-y-auto no-scrollbar">
+          <div class="bg-white p-2.5 rounded-xl rounded-tl-none max-w-[260px] text-xs text-slate-800 shadow-xs space-y-1">
+            <p>Danilo, como está o alinhamento do app móvel com a identidade do desktop?</p>
+            <span class="text-[9px] text-slate-400 float-right">09:39</span>
+          </div>
+
+          <div id="whatsapp-injected-msg" class="bg-[#dcf8c6] p-2.5 rounded-xl rounded-tr-none max-w-[270px] ml-auto text-xs text-slate-800 shadow-xs space-y-1 hidden">
+            <p id="whatsapp-injected-text">Olá time! O app móvel já está com o visual limpo validado e com injeção direta de texto via Floating Bubble.</p>
+            <span class="text-[9px] text-slate-500 float-right">09:41 ✓✓</span>
+          </div>
+        </div>
+
+        <!-- FLOATING BUBBLE OVERLAY DO FLOW VOICE AI (SERVIÇO DE ACESSIBILIDADE) -->
+        <div class="absolute right-4 bottom-24 z-30 flex flex-col items-end space-y-2">
+          <!-- Tooltip de Feedback do Bubble -->
+          <div id="bubble-pill-feedback" class="bg-slate-900/95 text-white px-3 py-1.5 rounded-2xl text-[11px] font-semibold shadow-bubble flex items-center space-x-2 border border-white/20 smooth-spring">
+            <span id="bubble-dot" class="w-2 h-2 rounded-full bg-sky-400"></span>
+            <span id="bubble-status-text">Flow Voice AI Pronto</span>
+          </div>
+
+          <!-- Botão Bubble Flutuante Circular -->
+          <button onclick="triggerFloatingDictate()" id="btn-floating-bubble" class="w-14 h-14 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-bubble border-2 border-white/80 active:scale-95 smooth-spring">
+            <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none">
+              <rect x="4.4" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+              <rect x="8.8" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+              <rect x="13.2" y="5" width="2.4" height="18" rx="1.2" fill="#ffffff" />
+              <rect x="17.6" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+              <rect x="22.0" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Input Fake do WhatsApp -->
+        <div class="p-2.5 bg-white border-t border-slate-200 flex items-center space-x-2 z-10">
+          <div class="flex-1 bg-slate-100 rounded-full px-4 py-2 text-xs text-slate-400 flex items-center justify-between">
+            <span id="fake-input-cursor">Mensagem...</span>
+            <i data-lucide="paperclip" class="w-3.5 h-3.5 text-slate-400"></i>
+          </div>
+          <div class="w-9 h-9 rounded-full bg-[#075e54] text-white flex items-center justify-center">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TELA 2: SKILLS & MODOS DE DITADO              -->
+      <!-- ============================================== -->
+      <section id="screen-skills" class="screen-view hidden flex-1 flex flex-col p-5 space-y-4 overflow-y-auto no-scrollbar">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-app-primary">Skills de Voz</h2>
+          <p class="text-xs text-app-secondary">Selecione o comportamento da IA para o seu ditado.</p>
+        </div>
+
+        <div class="space-y-3 pt-1">
+          <!-- Card 1: Ditado Fiel -->
+          <div onclick="selectSkillMobile('exact', '🎙️ Ditado Fiel')" id="skill-card-exact" class="border-2 border-app-primary rounded-3xl p-5 bg-app-card shadow-card cursor-pointer space-y-2 smooth-spring">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-app-subtle text-slate-700">Padrão Original</span>
+              <span id="badge-skill-exact" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Ativo</span>
+            </div>
+            <h3 class="font-bold text-base text-app-primary">🎙️ Ditado Fiel (Core)</h3>
+            <p class="text-xs text-app-secondary leading-relaxed">Fidelidade absoluta às palavras faladas. Apenas ajusta vírgulas, pontos e ortografia básica sem mudar vocabulário ou ordem.</p>
+          </div>
+
+          <!-- Card 2: Otimização de Texto -->
+          <div onclick="selectSkillMobile('polish', '🪄 Otimização')" id="skill-card-polish" class="border border-app-border rounded-3xl p-5 bg-app-card cursor-pointer space-y-2 smooth-spring hover:border-slate-300">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-app-subtle text-slate-700">Reescrita Fluida</span>
+              <span id="badge-skill-polish" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden">Ativo</span>
+            </div>
+            <h3 class="font-bold text-base text-app-primary">🪄 Otimização de Texto</h3>
+            <p class="text-xs text-app-secondary leading-relaxed">Reorganiza raciocínios soltos, melhora o encadeamento e transforma a fala em um texto formal, coeso e elegante.</p>
+          </div>
+
+          <!-- Card 3: Prompt Engineering -->
+          <div onclick="selectSkillMobile('prompt', '🤖 Prompt Eng')" id="skill-card-prompt" class="border border-app-border rounded-3xl p-5 bg-app-card cursor-pointer space-y-2 smooth-spring hover:border-slate-300">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-app-subtle text-slate-700">Para LLMs</span>
+              <span id="badge-skill-prompt" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 hidden">Ativo</span>
+            </div>
+            <h3 class="font-bold text-base text-app-primary">🤖 Prompt Engineering</h3>
+            <p class="text-xs text-app-secondary leading-relaxed">Decodifica ideias e comandos e gera um prompt estruturado: Role, Task, Contexto e Critérios de Aceite.</p>
+          </div>
+        </div>
+
+        <button onclick="goToScreen('screen-dictate')" class="w-full py-3.5 bg-app-primary text-white rounded-2xl text-xs font-bold tracking-wide shadow-md smooth-spring active:scale-98 mt-2">
+          Confirmar e Voltar ao Ditado
+        </button>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TELA 3: NOTETAKER REUNIÕES NO CELULAR         -->
+      <!-- ============================================== -->
+      <section id="screen-meetings" class="screen-view hidden flex-1 flex flex-col p-5 space-y-4 overflow-y-auto no-scrollbar">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-app-primary">Reuniões & Notetaker</h2>
+          <p class="text-xs text-app-secondary">Grave reuniões presenciais ou faça upload de áudios.</p>
+        </div>
+
+        <div class="bg-app-card border border-app-border/80 rounded-3xl p-5 space-y-3.5 shadow-card">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-app-primary">Gravação Contínua</span>
+            <span id="mobile-meeting-timer" class="font-mono text-xs font-bold text-slate-900 bg-app-subtle px-2.5 py-1 rounded-lg">⏱️ 00:00:00</span>
+          </div>
+
+          <button onclick="toggleMobileMeeting()" id="btn-mobile-meeting" class="w-full py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center justify-center space-x-2 smooth-spring shadow-md active:scale-98">
+            <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+            <span id="lbl-mobile-meeting">Iniciar Gravação Presencial</span>
+          </button>
+
+          <div class="flex items-center justify-between pt-1 text-xs text-app-secondary border-t border-slate-100">
+            <span>Importar áudio (.mp3, .m4a)</span>
+            <button class="px-3 py-1.5 bg-app-subtle hover:bg-slate-200 border border-app-border rounded-xl text-app-primary font-bold text-xs smooth-spring">Upload</button>
+          </div>
+        </div>
+
+        <div class="bg-app-card border border-app-border/80 rounded-3xl p-5 flex-1 flex flex-col space-y-2.5 shadow-card">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-app-muted">Ata Executiva Estruturada</span>
+            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">Gemini Long-Context</span>
+          </div>
+          <div class="bg-app-subtle/70 rounded-2xl p-3.5 text-xs text-app-primary space-y-2 font-mono overflow-y-auto h-40 no-scrollbar border border-slate-200/50">
+            <p class="font-bold"># Ata: Planejamento Estratégico</p>
+            <p><strong>BLUF:</strong> Validação do Floating Bubble e consistência da marca Flow Voice AI.</p>
+            <p><strong>Decisões Tomadas:</strong></p>
+            <p>• Adotar nome Flow Voice AI com tipografia Bricolage Grotesque na marca.</p>
+            <p>• Implementação de acessibilidade Android para ditar no WhatsApp.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TELA 4: HISTÓRICO & SINCRONIZAÇÃO              -->
+      <!-- ============================================== -->
+      <section id="screen-history" class="screen-view hidden flex-1 flex flex-col p-5 space-y-4 overflow-y-auto no-scrollbar">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-app-primary">Histórico</h2>
+            <p class="text-xs text-app-secondary">Sincronizado automaticamente com o Obsidian.</p>
+          </div>
+          <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Obsidian Sync OK</span>
+        </div>
+
+        <div class="space-y-2.5">
+          <div class="p-4 bg-app-card border border-app-border rounded-2xl space-y-1.5 shadow-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-app-muted">16:45</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-app-subtle text-slate-700">Ditado Fiel</span>
+            </div>
+            <p class="text-xs text-app-primary font-normal">"Revisar o alinhamento das telas do aplicativo móvel com o time de engenharia."</p>
+          </div>
+
+          <div class="p-4 bg-app-card border border-app-border rounded-2xl space-y-1.5 shadow-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-mono text-app-muted">14:12</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700">Prompt Eng</span>
+            </div>
+            <p class="text-xs text-app-primary font-normal">"**Role:** Mobile UI Architect | **Task:** Refine white clean layout tokens."</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 3. BARRA DE NAVEGAÇÃO INFERIOR ANDROID (BOTTOM BAR MINIMALISTA) -->
+    <nav class="pt-2 pb-2 px-3 bg-white border-t border-app-border/80 flex justify-around items-center z-40 rounded-b-[40px] shadow-nav">
+      <button onclick="goToScreen('screen-dictate')" id="nav-btn-dictate" class="nav-mobile-btn flex flex-col items-center space-y-1 text-app-primary py-1 px-3">
+        <i data-lucide="mic" class="w-5 h-5"></i>
+        <span class="text-[10px] font-bold">Ditado</span>
+      </button>
+
+      <button onclick="goToScreen('screen-skills')" id="nav-btn-skills" class="nav-mobile-btn flex flex-col items-center space-y-1 text-app-muted hover:text-app-primary py-1 px-3">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium">Skills</span>
+      </button>
+
+      <button onclick="goToScreen('screen-meetings')" id="nav-btn-meetings" class="nav-mobile-btn flex flex-col items-center space-y-1 text-app-muted hover:text-app-primary py-1 px-3">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium">Reuniões</span>
+      </button>
+
+      <button onclick="goToScreen('screen-history')" id="nav-btn-history" class="nav-mobile-btn flex flex-col items-center space-y-1 text-app-muted hover:text-app-primary py-1 px-3">
+        <i data-lucide="clock" class="w-5 h-5"></i>
+        <span class="text-[10px] font-medium">Histórico</span>
+      </button>
+    </nav>
+
+    <!-- BARRA GESTUAL DE NAVEGAÇÃO ANDROID (HOME PILL) -->
+    <div class="pb-1 pt-1 flex justify-center items-center">
+      <div class="w-32 h-1 bg-slate-900/30 rounded-full"></div>
+    </div>
+
+  </div>
+
+  <!-- CONTROLADOR DO PROTÓTIPO EM JAVASCRIPT -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+    });
+
+    function goToScreen(screenId) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.add('hidden'));
+      document.getElementById(screenId).classList.remove('hidden');
+
+      // Atualiza botões da topbar da prancha
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-app-primary', 'text-white', 'shadow-xs', 'bg-blue-600');
+        b.classList.add('text-slate-500');
+      });
+      const activeTabId = screenId.replace('screen-', 'btn-tab-');
+      const activeTab = document.getElementById(activeTabId);
+      if (activeTab) {
+        activeTab.classList.add('bg-app-primary', 'text-white', 'shadow-xs');
+        activeTab.classList.remove('text-slate-500');
+      }
+
+      // Atualiza botões da barra inferior mobile
+      document.querySelectorAll('.nav-mobile-btn').forEach(b => {
+        b.classList.remove('text-app-primary');
+        b.classList.add('text-app-muted');
+        const span = b.querySelector('span');
+        if (span) {
+          span.classList.remove('font-bold');
+          span.classList.add('font-medium');
+        }
+      });
+      const activeNavId = screenId.replace('screen-', 'nav-btn-');
+      const activeNav = document.getElementById(activeNavId);
+      if (activeNav) {
+        activeNav.classList.add('text-app-primary');
+        activeNav.classList.remove('text-app-muted');
+        const span = activeNav.querySelector('span');
+        if (span) {
+          span.classList.remove('font-medium');
+          span.classList.add('font-bold');
+        }
+      }
+    }
+
+    // Interatividade da Simulação do Floating Bubble no WhatsApp
+    let isFloatingRecording = false;
+    function triggerFloatingDictate() {
+      isFloatingRecording = !isFloatingRecording;
+      const pill = document.getElementById('bubble-pill-feedback');
+      const dot = document.getElementById('bubble-dot');
+      const statusText = document.getElementById('bubble-status-text');
+      const injectedMsg = document.getElementById('whatsapp-injected-msg');
+
+      if (isFloatingRecording) {
+        dot.className = "w-2 h-2 rounded-full bg-red-500 animate-ping";
+        statusText.textContent = "Ouvindo sua fala...";
+        pill.classList.remove('hidden');
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        statusText.textContent = "✓ Injetado no WhatsApp!";
+        injectedMsg.classList.remove('hidden');
+        setTimeout(() => {
+          dot.className = "w-2 h-2 rounded-full bg-sky-400";
+          statusText.textContent = "Flow Voice AI Pronto";
+        }, 2000);
+      }
+    }
+
+    // Interatividade da Tela de Ditado
+    let isRecordingMobile = false;
+    let waveInterval = null;
+
+    function toggleMobileDictate() {
+      isRecordingMobile = !isRecordingMobile;
+      const btn = document.getElementById('btn-mobile-mic');
+      const lbl = document.getElementById('lbl-mic-state');
+      const text = document.getElementById('live-transcription-text');
+
+      if (isRecordingMobile) {
+        btn.classList.add('bg-red-600', 'animate-pulse');
+        btn.classList.remove('bg-app-primary');
+        lbl.textContent = "Ouvindo... Toque para finalizar";
+        lbl.classList.add('text-red-600', 'font-bold');
+        text.textContent = "Ouvindo sua fala... Capturando áudio em alta fidelidade pelo microfone do smartphone.";
+        
+        waveInterval = setInterval(() => {
+          const bars = document.querySelectorAll('#recording-waveform span');
+          bars.forEach(b => {
+            const h = Math.floor(Math.random() * 22) + 8;
+            b.style.height = `${h}px`;
+            b.classList.remove('bg-slate-300');
+            b.classList.add('bg-blue-600');
+          });
+        }, 100);
+      } else {
+        clearInterval(waveInterval);
+        btn.classList.remove('bg-red-600', 'animate-pulse');
+        btn.classList.add('bg-app-primary');
+        lbl.textContent = "Toque no microfone para ditar";
+        lbl.classList.remove('text-red-600', 'font-bold');
+        text.textContent = "Olá, Danilo! A gravação foi finalizada com sucesso e o texto já foi pontuado de acordo com a skill selecionada.";
+        
+        const bars = document.querySelectorAll('#recording-waveform span');
+        bars.forEach(b => {
+          b.style.height = '14px';
+          b.classList.add('bg-slate-300');
+          b.classList.remove('bg-blue-600');
+        });
+      }
+    }
+
+    function selectSkillMobile(skillId, label) {
+      const skills = ['exact', 'polish', 'prompt'];
+      skills.forEach(s => {
+        const card = document.getElementById(`skill-card-${s}`);
+        const badge = document.getElementById(`badge-skill-${s}`);
+        if (s === skillId) {
+          card.classList.add('border-2', 'border-app-primary', 'shadow-card');
+          card.classList.remove('border', 'border-app-border');
+          badge.classList.remove('hidden');
+        } else {
+          card.classList.remove('border-2', 'border-app-primary', 'shadow-card');
+          card.classList.add('border', 'border-app-border');
+          badge.classList.add('hidden');
+        }
+      });
+      document.getElementById('label-active-skill').textContent = label;
+    }
+
+    let isMeetingRec = false;
+    let meetingSeconds = 0;
+    let meetingInterval = null;
+
+    function toggleMobileMeeting() {
+      isMeetingRec = !isMeetingRec;
+      const btn = document.getElementById('btn-mobile-meeting');
+      const lbl = document.getElementById('lbl-mobile-meeting');
+
+      if (isMeetingRec) {
+        lbl.textContent = "Finalizar & Gerar Ata";
+        btn.classList.add('bg-slate-900');
+        btn.classList.remove('bg-red-600');
+        meetingSeconds = 0;
+        meetingInterval = setInterval(() => {
+          meetingSeconds++;
+          const m = String(Math.floor(meetingSeconds / 60)).padStart(2, '0');
+          const s = String(meetingSeconds % 60).padStart(2, '0');
+          document.getElementById('mobile-meeting-timer').textContent = `⏱️ 00:${m}:${s}`;
+        }, 1000);
+      } else {
+        clearInterval(meetingInterval);
+        lbl.textContent = "Iniciar Gravação Presencial";
+        btn.classList.remove('bg-slate-900');
+        btn.classList.add('bg-red-600');
+      }
+    }
+
+    function simulateCopy() {
+      const btn = document.getElementById('btn-copy-live');
+      btn.innerHTML = '<span>✓ Copiado!</span>';
+      setTimeout(() => {
+        btn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i><span>Copiar Texto</span>';
+        lucide.createIcons();
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

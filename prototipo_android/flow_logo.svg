@@ -1,0 +1,13 @@
+<svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Container circular / squircle suave estilo app moderno -->
+  <rect width="28" height="28" rx="8" fill="#0f172a" />
+  
+  <!-- 5 Barras de onda sonora com espessura generosa (2.4px de largura e cantos arredondados) -->
+  <!-- Alturas relativas: [7px, 12px, 18px, 12px, 7px] -->
+  <!-- x centralizado: total_width = 5*2.4 + 4*2 = 12 + 8 = 20 -> start_x = 4 -->
+  <rect x="4.4" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+  <rect x="8.8" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+  <rect x="13.2" y="5" width="2.4" height="18" rx="1.2" fill="#ffffff" />
+  <rect x="17.6" y="8" width="2.4" height="12" rx="1.2" fill="#ffffff" />
+  <rect x="22.0" y="10.5" width="2.4" height="7" rx="1.2" fill="#ffffff" />
+</svg>
