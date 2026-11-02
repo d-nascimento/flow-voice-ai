@@ -1,4 +1,4 @@
-# Core Áudio e Entrada
+# Core Audio and Input
 sounddevice>=0.4.6
 numpy>=1.26.0
 scipy>=1.11.0
@@ -6,13 +6,13 @@ pynput>=1.7.6
 pyperclip>=1.8.2
 pywin32>=306
 
-# ASR e LLM
+# ASR and LLM
 groq>=0.15.0
 google-genai>=1.0.0
 requests>=2.31.0
 python-dotenv>=1.0.0
 
-# Interface e Qualidade
+# Interface and Quality
 pystray>=0.19.5
 Pillow>=10.2.0
 pytest>=8.0.0

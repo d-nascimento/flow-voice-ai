@@ -22,5 +22,34 @@ Flow Voice AI/
 └── requirements.txt      # Dependências
 ```
 
-## Como Iniciar
-Consulte o guia detalhado em [`docs/setup.md`](docs/setup.md).
+## Como Executar
+
+1. **Ative o ambiente virtual**:
+   ```powershell
+   .\.venv\Scripts\Activate.ps1
+   ```
+
+2. **Execute a aplicação**:
+   ```powershell
+   python -m src.main
+   ```
+
+3. **Uso**:
+   - Segure **`Ctrl + Espaço`** (ou o atalho configurado no `.env`).
+   - Fale naturalmente. Você pode tanto **ditar texto** quanto **dar comandos no Windows**:
+     - **Ditação**: Fale o que quer escrever; o texto é refinado e colado no cursor ativo.
+     - **Comandos**: 
+       - *"Abra o Chrome"* / *"Abra o Notion"* / *"Abra o VS Code"*
+       - *"Pesquise sobre inteligência artificial no Google"*
+       - *"Abra a pasta Downloads"* / *"Abra Documentos"*
+       - *"Aumente o volume"* / *"Abaixe o volume"* / *"Mutar som"*
+       - *"Tire um print da tela"* (salva automaticamente em Imagens/Screenshots)
+       - *"Mostre a área de trabalho"* (minimiza janelas)
+       - *"Feche esta janela"* / *"Bloqueie o computador"*
+   - Solte o atalho para executar instantaneamente!
+
+4. **Executar Testes e Quality Gates**:
+   ```powershell
+   pytest
+   mypy src
+   ```
