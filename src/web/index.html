@@ -44,12 +44,10 @@
     }
   </script>
   <style>
-    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #dcd7ce; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #b8b2a5; }
-    /* Microinteração de transição suave */
     .smooth-transition { transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
   </style>
 </head>
@@ -75,6 +73,11 @@
           <span>Dictation</span>
         </button>
 
+        <button onclick="switchTab('modes')" id="nav-modes" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+          <i data-lucide="wand-2" class="w-4 h-4"></i>
+          <span>Skills & Modos</span>
+        </button>
+
         <button onclick="switchTab('meetings')" id="nav-meetings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
           <i data-lucide="calendar" class="w-4 h-4"></i>
           <span>Notetaker</span>
@@ -98,7 +101,7 @@
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         <span class="text-xs font-semibold text-lilac">Flow Voice AI Ativo</span>
       </div>
-      <p class="text-[11px] text-mocha leading-relaxed">Push-to-Talk de baixa latência e Atas automáticas.</p>
+      <p id="footer-active-mode" class="text-[11px] text-mocha leading-relaxed">Modo: Ditado Fiel (Core)</p>
     </div>
   </aside>
 
@@ -118,8 +121,17 @@
         <p class="text-xs text-neutral-400 max-w-lg leading-relaxed">Fale naturalmente em Português ou Inglês. O modelo preserva o idioma original, pontua com rigor e elimina gaguejos.</p>
       </div>
 
+      <!-- Mini Bar de Seleção Rápida de Skill no Dictation -->
+      <div class="flex items-center justify-between p-3 bg-sand-card border border-sand-border rounded-2xl shadow-xs">
+        <div class="flex items-center space-x-2 text-xs">
+          <span class="text-muted font-bold uppercase tracking-wider text-[10px]">Skill Ativa:</span>
+          <span id="dictation-mode-badge" class="font-semibold text-charcoal bg-sand-container px-2 py-0.5 rounded-md">Ditado Fiel (Core)</span>
+        </div>
+        <button onclick="switchTab('modes')" class="text-xs text-lilac hover:underline font-medium">Alterar Skill →</button>
+      </div>
+
       <!-- Histórico de Transcrições -->
-      <div class="space-y-3 pt-2">
+      <div class="space-y-3 pt-1">
         <div class="flex items-center justify-between">
           <span class="text-[11px] font-bold uppercase tracking-wider text-muted">Transcrições Recentes</span>
           <div class="space-x-2">
@@ -128,13 +140,74 @@
           </div>
         </div>
 
-        <div id="history-container" class="bg-sand-card border border-sand-border rounded-2xl p-3 min-h-[220px] max-h-[280px] overflow-y-auto divide-y divide-sand-border text-sm">
+        <div id="history-container" class="bg-sand-card border border-sand-border rounded-2xl p-3 min-h-[190px] max-h-[240px] overflow-y-auto divide-y divide-sand-border text-sm">
           <div class="py-8 text-center text-muted text-xs">Pressione Ctrl + Espaço em qualquer app para ditar.</div>
         </div>
       </div>
     </section>
 
-    <!-- TELA 2: NOTETAKER / REUNIÕES -->
+    <!-- TELA 2: SKILLS & MODOS (EXACT, POLISH, PROMPT) -->
+    <section id="view-modes" class="tab-view hidden space-y-5">
+      <div>
+        <h2 class="font-serif text-2xl text-charcoal">Skills & Modos de Ditado</h2>
+        <p class="text-xs text-mocha">Escolha como a inteligência deve tratar sua voz ao soltar o atalho Push-to-Talk.</p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 pt-2">
+        <!-- 1. DITADO FIEL (CORE) -->
+        <div id="card-mode-exact" onclick="selectMode('exact')" class="cursor-pointer border-2 rounded-2xl p-5 space-y-3 bg-sand-card smooth-transition relative flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sand-container text-mocha">Padrão Superflow</span>
+              <span id="badge-active-exact" class="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-bg text-lilac hidden">Ativo</span>
+            </div>
+            <h3 class="font-bold text-sm text-charcoal flex items-center space-x-1.5">
+              <span>🎙️ Ditado Fiel (Core)</span>
+            </h3>
+            <p class="text-xs text-mocha leading-relaxed">Captura exatamente o que você falou. Ajusta apenas ortografia básica, vírgulas e pontos, sem jamais inventar, resumir ou trocar palavras.</p>
+          </div>
+          <div class="p-2.5 bg-sand-container rounded-xl text-[11px] text-muted italic">
+            "manda o arquivo pro joao" → "Manda o arquivo pro João."
+          </div>
+        </div>
+
+        <!-- 2. OTIMIZAÇÃO DE TEXTO (POLISH) -->
+        <div id="card-mode-polish" onclick="selectMode('polish')" class="cursor-pointer border-2 rounded-2xl p-5 space-y-3 bg-sand-card smooth-transition relative flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sand-container text-mocha">Reescrita Fluida</span>
+              <span id="badge-active-polish" class="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-bg text-lilac hidden">Ativo</span>
+            </div>
+            <h3 class="font-bold text-sm text-charcoal flex items-center space-x-1.5">
+              <span>🪄 Otimização de Texto</span>
+            </h3>
+            <p class="text-xs text-mocha leading-relaxed">Reorganiza o raciocínio, enriquece o vocabulário e troca palavras para transformar pensamentos soltos em um texto formal, coeso e elegante.</p>
+          </div>
+          <div class="p-2.5 bg-sand-container rounded-xl text-[11px] text-muted italic">
+            "fala que ta pronto e manda" → "Olá, o documento foi finalizado e segue para sua avaliação."
+          </div>
+        </div>
+
+        <!-- 3. PROMPT ENGINEERING -->
+        <div id="card-mode-prompt" onclick="selectMode('prompt')" class="cursor-pointer border-2 rounded-2xl p-5 space-y-3 bg-sand-card smooth-transition relative flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-sand-container text-mocha">Para LLMs</span>
+              <span id="badge-active-prompt" class="text-[10px] font-bold px-2 py-0.5 rounded bg-lilac-bg text-lilac hidden">Ativo</span>
+            </div>
+            <h3 class="font-bold text-sm text-charcoal flex items-center space-x-1.5">
+              <span>🤖 Prompt Engineering</span>
+            </h3>
+            <p class="text-xs text-mocha leading-relaxed">Decodifica intenções e comandos soltos e estrutura no formato ideal para IA (Role, Task, Contexto, Regras e Formato de Saída).</p>
+          </div>
+          <div class="p-2.5 bg-sand-container rounded-xl text-[11px] text-muted italic">
+            "faz um post do café novo suave" → "**Role:** Copywriter | **Task:** Criar post..."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 3: NOTETAKER / REUNIÕES -->
     <section id="view-meetings" class="tab-view hidden space-y-5">
       <div class="flex items-center justify-between">
         <div>
@@ -189,7 +262,7 @@
       </div>
     </section>
 
-    <!-- TELA 3: INSIGHTS -->
+    <!-- TELA 4: INSIGHTS -->
     <section id="view-insights" class="tab-view hidden space-y-6">
       <h2 class="font-serif text-2xl text-charcoal">Insights & Produtividade</h2>
       <div class="grid grid-cols-3 gap-4">
@@ -214,13 +287,13 @@
         <h3 class="text-sm font-semibold">Arquitetura de Dupla Inteligência</h3>
         <p class="text-xs text-mocha leading-relaxed">
           • Transcrição acústica instantânea via Groq Whisper Large-v3-turbo.<br>
-          • Pontuação natural e controle do SO via Gemini 3.5 Flash Lite.<br>
+          • 3 Skills de ditado especializadas (Core Fiel, Otimização de Texto e Prompt Engineering).<br>
           • Síntese executiva de reuniões com contexto de até 9,5 horas via Gemini Long-Context.
         </p>
       </div>
     </section>
 
-    <!-- TELA 4: CONFIGURAÇÕES -->
+    <!-- TELA 5: CONFIGURAÇÕES -->
     <section id="view-settings" class="tab-view hidden space-y-5">
       <h2 class="font-serif text-2xl text-charcoal">Configurações Gerais</h2>
       
@@ -253,21 +326,26 @@
 
   </main>
 
-  <!-- LÓGICA JAVASCRIPT REUTILIZÁVEL E CONECTADA À PONTE PYTHON -->
   <script>
     let isMeetingRecording = false;
     let meetingTimerInterval = null;
     let meetingElapsed = 0;
     let lastObsidianFile = "";
+    let currentActiveMode = "exact";
 
-    // Inicialização dos ícones Lucide
+    const modeLabels = {
+      "exact": "Ditado Fiel (Core)",
+      "polish": "Otimização de Texto",
+      "prompt": "Prompt Engineering"
+    };
+
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
+      loadModes();
       loadMicrophones();
       loadHistory();
     });
 
-    // Troca de Abas
     function switchTab(tabId) {
       document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
@@ -282,6 +360,55 @@
         activeBtn.classList.add('bg-sand-card', 'shadow-sm', 'border', 'border-sand-border', 'text-charcoal');
         activeBtn.classList.remove('text-mocha', 'hover:bg-sand-hover');
       }
+    }
+
+    // Modos de Ditado
+    async function loadModes() {
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.get_modes_data();
+        if (res && res.active_mode) {
+          applyModeUI(res.active_mode);
+        }
+      } else {
+        applyModeUI("exact");
+      }
+    }
+
+    async function selectMode(modeId) {
+      if (window.pywebview && window.pywebview.api) {
+        const res = await window.pywebview.api.set_active_mode(modeId);
+        if (res && res.success) {
+          applyModeUI(modeId);
+        }
+      } else {
+        applyModeUI(modeId);
+      }
+    }
+
+    function applyModeUI(modeId) {
+      currentActiveMode = modeId;
+      const modes = ["exact", "polish", "prompt"];
+      modes.forEach(m => {
+        const card = document.getElementById(`card-mode-${m}`);
+        const badge = document.getElementById(`badge-active-${m}`);
+        if (card && badge) {
+          if (m === modeId) {
+            card.classList.add('border-lilac', 'shadow-sm');
+            card.classList.remove('border-sand-border');
+            badge.classList.remove('hidden');
+          } else {
+            card.classList.remove('border-lilac', 'shadow-sm');
+            card.classList.add('border-sand-border');
+            badge.classList.add('hidden');
+          }
+        }
+      });
+
+      const label = modeLabels[modeId] || "Ditado Fiel (Core)";
+      const dBadge = document.getElementById('dictation-mode-badge');
+      if (dBadge) dBadge.textContent = label;
+      const fLabel = document.getElementById('footer-active-mode');
+      if (fLabel) fLabel.textContent = `Modo: ${label}`;
     }
 
     // Microfones

@@ -6,6 +6,7 @@ from pathlib import Path
 from src.meetings.recorder import MeetingRecorder
 from src.meetings.synthesizer import MeetingSynthesizer
 from src.meetings.exporter import MeetingExporter
+from src.dictation.modes import DictationModesManager
 
 logger = logging.getLogger(__name__)
 
@@ -16,20 +17,31 @@ class WebBridge:
     Exposta diretamente no JavaScript da janela como `window.pywebview.api`.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, modes_mgr: Optional[DictationModesManager] = None) -> None:
         self.meeting_recorder = MeetingRecorder()
         self.synthesizer = MeetingSynthesizer()
         self.exporter = MeetingExporter()
+        self.modes_mgr = modes_mgr or DictationModesManager()
         self.history: List[Dict[str, Any]] = []
         self._window = None
 
     def set_window(self, window: Any) -> None:
         self._window = window
 
+    # --- Modos e Skills de Ditado ---
+
+    def get_modes_data(self) -> Dict[str, Any]:
+        """Retorna o modo ativo e catálogo de skills."""
+        return self.modes_mgr.get_modes_data()
+
+    def set_active_mode(self, mode_id: str) -> Dict[str, Any]:
+        """Altera a skill de ditado ativa (exact, polish ou prompt)."""
+        success = self.modes_mgr.set_active_mode(mode_id)
+        return {"success": success, "active_mode": self.modes_mgr.active_mode}
+
     # --- Microfones e Dispositivos ---
 
     def get_microphones(self) -> List[str]:
-        """Lista os microfones disponíveis no sistema."""
         try:
             devs = sd.query_devices()
             unique_mics: List[str] = []
@@ -119,7 +131,6 @@ class WebBridge:
             return {"success": False, "error": str(e)}
 
     def open_path_in_os(self, file_path: str) -> bool:
-        """Abre arquivo no Obsidian ou aplicativo padrão do Windows."""
         try:
             import os
             if os.path.exists(file_path):
