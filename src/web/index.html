@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Voice AI</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sand: {
+              app: '#eeebe3',
+              card: '#fcfcfb',
+              container: '#f5f4f0',
+              hover: '#e8e5dc',
+              border: '#e2ded5',
+              focus: '#b8b2a5',
+            },
+            charcoal: '#18181b',
+            mocha: '#6b665f',
+            muted: '#9a9489',
+            lilac: {
+              DEFAULT: '#834bb0',
+              bg: '#f5ebfc',
+            },
+            amberAccent: {
+              DEFAULT: '#ff9f45',
+              bg: '#fff1e0',
+              text: '#b45309',
+            },
+            tealAccent: '#1d5854',
+          },
+          fontFamily: {
+            serif: ['Georgia', 'Fraunces', 'serif'],
+            sans: ['Segoe UI', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #dcd7ce; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #b8b2a5; }
+    /* Microinteração de transição suave */
+    .smooth-transition { transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1); }
+  </style>
+</head>
+<body class="bg-sand-app text-charcoal font-sans select-none overflow-hidden h-screen flex">
+
+  <!-- 1. SIDEBAR DE NAVEGAÇÃO -->
+  <aside class="w-56 bg-sand-app border-r border-sand-border flex flex-col justify-between p-4">
+    <div class="space-y-4">
+      <!-- Logo Wispr Flow -->
+      <div class="flex items-center justify-between px-2 pt-1">
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-lg tracking-tight flex items-center">
+            <span class="text-charcoal tracking-tighter mr-1 font-mono">|||</span> Flow
+          </span>
+          <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-lilac-bg text-lilac">Pro</span>
+        </div>
+      </div>
+
+      <!-- Links de Navegação Unificados -->
+      <nav class="space-y-1 pt-2">
+        <button onclick="switchTab('dictation')" id="nav-dictation" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition bg-sand-card text-charcoal shadow-sm border border-sand-border">
+          <i data-lucide="mic" class="w-4 h-4 text-charcoal"></i>
+          <span>Dictation</span>
+        </button>
+
+        <button onclick="switchTab('meetings')" id="nav-meetings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Notetaker</span>
+        </button>
+
+        <button onclick="switchTab('insights')" id="nav-insights" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+          <span>Insights</span>
+        </button>
+
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-sm font-medium smooth-transition text-mocha hover:bg-sand-hover hover:text-charcoal">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>Configurações</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Mini Card de Status no Rodapé -->
+    <div class="p-3 bg-lilac-bg/80 border border-lilac/10 rounded-2xl space-y-1">
+      <div class="flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-semibold text-lilac">Flow Voice AI Ativo</span>
+      </div>
+      <p class="text-[11px] text-mocha leading-relaxed">Push-to-Talk de baixa latência e Atas automáticas.</p>
+    </div>
+  </aside>
+
+  <!-- 2. ÁREA CENTRAL DE CONTEÚDO -->
+  <main class="flex-1 flex flex-col p-6 overflow-y-auto">
+
+    <!-- TELA 1: DICTATION -->
+    <section id="view-dictation" class="tab-view space-y-5">
+      <div class="flex items-center space-x-2">
+        <span class="text-base font-medium">Hey, entre no fluxo com</span>
+        <span class="bg-amberAccent-bg border border-amberAccent text-amberAccent-text px-2.5 py-0.5 rounded-lg text-xs font-semibold shadow-xs">Ctrl + Espaço</span>
+      </div>
+
+      <!-- Banner Editorial Escuro -->
+      <div class="bg-neutral-900 rounded-2xl p-6 text-white space-y-2 relative overflow-hidden shadow-sm">
+        <h2 class="font-serif text-2xl tracking-wide">Make Flow sound like you</h2>
+        <p class="text-xs text-neutral-400 max-w-lg leading-relaxed">Fale naturalmente em Português ou Inglês. O modelo preserva o idioma original, pontua com rigor e elimina gaguejos.</p>
+      </div>
+
+      <!-- Histórico de Transcrições -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-muted">Transcrições Recentes</span>
+          <div class="space-x-2">
+            <button onclick="copyActiveHistory()" class="px-3 py-1 bg-sand-container hover:bg-sand-hover border border-sand-border rounded-lg text-xs font-medium smooth-transition">Copiar</button>
+            <button onclick="clearHistory()" class="px-3 py-1 bg-sand-container hover:bg-sand-hover border border-sand-border rounded-lg text-xs font-medium smooth-transition">Limpar</button>
+          </div>
+        </div>
+
+        <div id="history-container" class="bg-sand-card border border-sand-border rounded-2xl p-3 min-h-[220px] max-h-[280px] overflow-y-auto divide-y divide-sand-border text-sm">
+          <div class="py-8 text-center text-muted text-xs">Pressione Ctrl + Espaço em qualquer app para ditar.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 2: NOTETAKER / REUNIÕES -->
+    <section id="view-meetings" class="tab-view hidden space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="font-serif text-2xl text-charcoal">Notetaker & Reuniões</h2>
+          <p class="text-xs text-mocha">Gravação contínua mista ou importação de arquivos para geração de atas executivas.</p>
+        </div>
+      </div>
+
+      <!-- Painel de Gravação e Upload -->
+      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-4 shadow-sm">
+        <div class="flex items-center space-x-4">
+          <button id="btn-toggle-meeting" onclick="toggleMeetingRecording()" class="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium text-xs px-4 py-2.5 rounded-xl smooth-transition shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+            <span id="lbl-btn-meeting">Gravar Reunião ao Vivo</span>
+          </button>
+          <span id="meeting-timer" class="font-semibold text-sm font-mono text-charcoal">⏱️ 00:00:00</span>
+          
+          <div class="h-5 w-px bg-sand-border"></div>
+
+          <label class="cursor-pointer flex items-center space-x-2 bg-sand-container hover:bg-sand-hover border border-sand-border text-charcoal px-3 py-2 rounded-xl text-xs font-medium smooth-transition">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>Importar Áudio</span>
+            <input type="file" id="file-uploader" accept=".mp3,.m4a,.wav,.aac,.ogg,.flac" class="hidden" onchange="handleFileUpload(event)">
+          </label>
+          <span id="uploaded-filename" class="text-xs text-muted truncate max-w-xs">Nenhum arquivo importado</span>
+        </div>
+
+        <div class="flex items-center space-x-6 pt-2 text-xs text-mocha">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="chk-loopback" checked class="rounded accent-tealAccent">
+            <span>Capturar áudio dos outros participantes (fone)</span>
+          </label>
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="chk-obsidian" checked class="rounded accent-tealAccent">
+            <span>Salvar automaticamente no Obsidian (00_Inbox)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Visualizador da Ata -->
+      <div class="space-y-2 flex-1 flex flex-col">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-muted">Ata Executiva Estruturada & Transcrição</span>
+          <span id="meeting-status-msg" class="text-xs text-mocha italic">Pronto</span>
+        </div>
+        <textarea id="meeting-markdown" readonly placeholder="A ata executiva gerada pelo Gemini Long-Context será exibida aqui com BLUF, Decisões e Tabela de Ações..." class="w-full h-56 p-4 bg-sand-card border border-sand-border rounded-2xl text-xs text-charcoal font-mono resize-none focus:outline-none focus:border-sand-focus"></textarea>
+        
+        <div class="flex justify-between pt-1">
+          <button id="btn-open-obsidian" onclick="openLastObsidian()" disabled class="px-4 py-2 bg-sand-container disabled:opacity-40 border border-sand-border rounded-xl text-xs font-medium smooth-transition">Abrir no Obsidian</button>
+          <button onclick="copyMeetingMarkdown()" class="px-4 py-2 bg-charcoal hover:bg-neutral-800 text-white rounded-xl text-xs font-medium smooth-transition">Copiar Markdown</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 3: INSIGHTS -->
+    <section id="view-insights" class="tab-view hidden space-y-6">
+      <h2 class="font-serif text-2xl text-charcoal">Insights & Produtividade</h2>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-sand-card border border-sand-border rounded-2xl p-4 space-y-1 shadow-sm">
+          <span class="font-bold text-2xl tracking-tight">144</span>
+          <p class="text-[10px] font-bold uppercase text-muted tracking-wider">Palavras por Minuto</p>
+          <p class="text-[11px] text-tealAccent font-medium pt-1">Top 0.2% velocidade</p>
+        </div>
+        <div class="bg-sand-card border border-sand-border rounded-2xl p-4 space-y-1 shadow-sm">
+          <span class="font-bold text-2xl tracking-tight">~240ms</span>
+          <p class="text-[10px] font-bold uppercase text-muted tracking-wider">Latência Média</p>
+          <p class="text-[11px] text-tealAccent font-medium pt-1">Groq Whisper Turbo</p>
+        </div>
+        <div class="bg-sand-card border border-sand-border rounded-2xl p-4 space-y-1 shadow-sm">
+          <span class="font-bold text-2xl tracking-tight">100%</span>
+          <p class="text-[10px] font-bold uppercase text-muted tracking-wider">Disponibilidade</p>
+          <p class="text-[11px] text-tealAccent font-medium pt-1">Desktop Windows Ativo</p>
+        </div>
+      </div>
+
+      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-2">
+        <h3 class="text-sm font-semibold">Arquitetura de Dupla Inteligência</h3>
+        <p class="text-xs text-mocha leading-relaxed">
+          • Transcrição acústica instantânea via Groq Whisper Large-v3-turbo.<br>
+          • Pontuação natural e controle do SO via Gemini 3.5 Flash Lite.<br>
+          • Síntese executiva de reuniões com contexto de até 9,5 horas via Gemini Long-Context.
+        </p>
+      </div>
+    </section>
+
+    <!-- TELA 4: CONFIGURAÇÕES -->
+    <section id="view-settings" class="tab-view hidden space-y-5">
+      <h2 class="font-serif text-2xl text-charcoal">Configurações Gerais</h2>
+      
+      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-4 shadow-sm">
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-charcoal">Dispositivo de Microfone</label>
+          <select id="select-mic" class="w-full bg-sand-container border border-sand-border rounded-xl p-2.5 text-xs text-charcoal focus:outline-none"></select>
+        </div>
+
+        <div class="pt-2">
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" id="chk-os-actions" checked class="rounded accent-tealAccent">
+            <span class="text-xs text-charcoal">Habilitar Comandos de Voz no SO (abrir pastas, apps, volume)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="bg-sand-card border border-sand-border rounded-2xl p-5 space-y-2">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Status das Conexões de IA</h3>
+        <div class="flex items-center space-x-2 text-xs text-emerald-700">
+          <span>●</span>
+          <span>Groq Cloud API (Whisper Large-v3-turbo): Conectado</span>
+        </div>
+        <div class="flex items-center space-x-2 text-xs text-emerald-700">
+          <span>●</span>
+          <span>Google Gemini API (Flash Lite & Long-Context): Conectado</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- LÓGICA JAVASCRIPT REUTILIZÁVEL E CONECTADA À PONTE PYTHON -->
+  <script>
+    let isMeetingRecording = false;
+    let meetingTimerInterval = null;
+    let meetingElapsed = 0;
+    let lastObsidianFile = "";
+
+    // Inicialização dos ícones Lucide
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      loadMicrophones();
+      loadHistory();
+    });
+
+    // Troca de Abas
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-sand-card', 'shadow-sm', 'border', 'border-sand-border', 'text-charcoal');
+        btn.classList.add('text-mocha', 'hover:bg-sand-hover', 'hover:text-charcoal');
+      });
+
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-sand-card', 'shadow-sm', 'border', 'border-sand-border', 'text-charcoal');
+        activeBtn.classList.remove('text-mocha', 'hover:bg-sand-hover');
+      }
+    }
+
+    // Microfones
+    async function loadMicrophones() {
+      if (window.pywebview && window.pywebview.api) {
+        const mics = await window.pywebview.api.get_microphones();
+        const select = document.getElementById('select-mic');
+        select.innerHTML = '';
+        mics.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m;
+          select.appendChild(opt);
+        });
+      }
+    }
+
+    // Histórico
+    async function loadHistory() {
+      if (window.pywebview && window.pywebview.api) {
+        const hist = await window.pywebview.api.get_history();
+        renderHistory(hist);
+      }
+    }
+
+    function renderHistory(items) {
+      const container = document.getElementById('history-container');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<div class="py-8 text-center text-muted text-xs">Pressione Ctrl + Espaço em qualquer app para ditar.</div>';
+        return;
+      }
+      container.innerHTML = items.map(item => `
+        <div class="py-2.5 flex items-start justify-between space-x-3">
+          <div class="flex items-center space-x-2">
+            <span class="text-[11px] font-mono text-muted">${item.time}</span>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${item.type === 'command' ? 'bg-amberAccent-bg text-amberAccent-text' : 'bg-sand-container text-mocha'}">
+              ${item.type === 'command' ? '⚡ Comando' : '✍️ Ditação'}
+            </span>
+          </div>
+          <p class="text-xs text-charcoal flex-1 select-text">${item.text}</p>
+        </div>
+      `).join('');
+    }
+
+    window.onHistoryUpdate = function(entry) {
+      loadHistory();
+    };
+
+    async function clearHistory() {
+      if (window.pywebview && window.pywebview.api) {
+        await window.pywebview.api.clear_history();
+        loadHistory();
+      }
+    }
+
+    function copyActiveHistory() {
+      const first = document.querySelector('#history-container p');
+      if (first) {
+        navigator.clipboard.writeText(first.textContent);
+      }
+    }
+
+    // Reuniões & Notetaker
+    async function toggleMeetingRecording() {
+      if (!isMeetingRecording) {
+        const loopback = document.getElementById('chk-loopback').checked;
+        const res = await window.pywebview.api.start_meeting_recording(loopback);
+        if (res.success) {
+          isMeetingRecording = true;
+          document.getElementById('lbl-btn-meeting').textContent = "Finalizar & Sintetizar";
+          meetingElapsed = 0;
+          meetingTimerInterval = setInterval(updateMeetingTimer, 1000);
+          document.getElementById('meeting-status-msg').textContent = "Gravando áudio em alta fidelidade...";
+        }
+      } else {
+        clearInterval(meetingTimerInterval);
+        isMeetingRecording = false;
+        document.getElementById('lbl-btn-meeting').textContent = "Processando...";
+        document.getElementById('meeting-status-msg').textContent = "Enviando ao Gemini Long-Context...";
+        
+        const saveObsidian = document.getElementById('chk-obsidian').checked;
+        const res = await window.pywebview.api.stop_meeting_recording(saveObsidian);
+        handleMeetingResult(res);
+      }
+    }
+
+    function updateMeetingTimer() {
+      meetingElapsed++;
+      const h = String(Math.floor(meetingElapsed / 3600)).padStart(2, '0');
+      const m = String(Math.floor((meetingElapsed % 3600) / 60)).padStart(2, '0');
+      const s = String(meetingElapsed % 60).padStart(2, '0');
+      document.getElementById('meeting-timer').textContent = `⏱️ ${h}:${m}:${s}`;
+    }
+
+    async function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      document.getElementById('uploaded-filename').textContent = `${file.name}`;
+      document.getElementById('meeting-status-msg').textContent = "Processando arquivo importado...";
+
+      const saveObsidian = document.getElementById('chk-obsidian').checked;
+      const res = await window.pywebview.api.synthesize_uploaded_file(file.path, saveObsidian);
+      handleMeetingResult(res);
+    }
+
+    function handleMeetingResult(res) {
+      document.getElementById('lbl-btn-meeting').textContent = "Gravar Reunião ao Vivo";
+      if (res && res.success) {
+        document.getElementById('meeting-markdown').value = res.markdown;
+        document.getElementById('meeting-status-msg').textContent = "✓ Ata executiva gerada com sucesso!";
+        if (res.obsidian_path) {
+          lastObsidianFile = res.obsidian_path;
+          document.getElementById('btn-open-obsidian').disabled = false;
+        }
+      } else {
+        document.getElementById('meeting-status-msg').textContent = `Erro: ${res.error || 'Falha no processamento'}`;
+      }
+    }
+
+    function openLastObsidian() {
+      if (lastObsidianFile && window.pywebview && window.pywebview.api) {
+        window.pywebview.api.open_path_in_os(lastObsidianFile);
+      }
+    }
+
+    function copyMeetingMarkdown() {
+      const val = document.getElementById('meeting-markdown').value;
+      if (val) navigator.clipboard.writeText(val);
+    }
+  </script>
+</body>
+</html>

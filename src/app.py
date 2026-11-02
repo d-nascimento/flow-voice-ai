@@ -18,7 +18,7 @@ from pynput import keyboard
 from src.config import HOTKEY_PUSH_TO_TALK, GROQ_API_KEY, GEMINI_API_KEY
 from src.pipeline import VoicePipeline
 from src.ui.overlay import VoiceOverlay
-from src.ui.hub import HubWindow
+from src.ui.web_hub import WebHubManager
 from src.ui.tray import TrayManager
 from src.ui.sound import SoundPlayer
 
@@ -46,7 +46,7 @@ class DesktopApplication:
         # Inicializa UI e Pipeline
         self.pipeline = VoicePipeline()
         self.overlay = VoiceOverlay()
-        self.hub = HubWindow()
+        self.hub = WebHubManager()
         self.tray = TrayManager(
             on_open_hub=self.show_hub,
             on_exit=self.quit,
@@ -66,7 +66,6 @@ class DesktopApplication:
 
     def show_hub(self) -> None:
         self.hub.show()
-        self.hub.activateWindow()
 
     def quit(self) -> None:
         logger.info("Encerrando Flow Voice AI...")
